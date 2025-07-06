@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.pulseband.pulseband.controllers.DashboardController" prefHeight="400.0" prefWidth="600.0">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <HBox spacing="10" xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml">
+        <Label fx:id="welcomeLabel"/>
+        <Label fx:id="mqttConnectionStatusLabel" text="Status of MQTT connection..."/>
+    </HBox>
+
+    <TextArea fx:id="mqttMessagesReceivedTextArea" text="Messages received will appear here..." editable="false"
+              wrapText="true"/>
+
+    <TableView fx:id="driversTable" prefWidth="800" prefHeight="400">
+        <columns>
+            <TableColumn fx:id="colId" text="Id" prefWidth="50" />
+            <TableColumn fx:id="colName" text="Name" prefWidth="150" />
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="150" />
+            <TableColumn fx:id="colPhone" text="Phone number" prefWidth="100" />
+            <TableColumn fx:id="colBPMs" text="BPMs" prefWidth="250" />
+            <TableColumn fx:id="colAlerts" text="Alerts" prefWidth="450" />
+            <TableColumn fx:id="colEmergencyContact" text="Emergency contact" prefWidth="350" />
+        </columns>
+    </TableView>
+</VBox>
+
