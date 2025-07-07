@@ -13,7 +13,7 @@
     -color-dangerous: #FF4D4D;
     -color-dangerous-foreground: #4C1717;
 
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
     -fx-background-color: -color-background;
 }
 
@@ -21,16 +21,16 @@
     -fx-background-color: -color-primary;
     -fx-text-fill: -color-primary-foreground;
     -fx-cursor: hand;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
 }
 
 .text-field, .password-field {
-    -fx-background-color: -color-background;
+    -fx-background-color: -color-card;
     -fx-text-fill: -color-foreground;
     -fx-prompt-text-fill: -color-muted-foreground;
     -fx-border-color: -color-border;
     -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
 }
