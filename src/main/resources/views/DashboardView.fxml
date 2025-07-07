@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
-<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="10" xmlns="http://javafx.com/javafx" stylesheets="@../styles/globals.css,@../styles/dashboard.css" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.pulseband.pulseband.controllers.DashboardController" prefHeight="400.0" prefWidth="600.0">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>

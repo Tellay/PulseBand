@@ -56,24 +56,4 @@ public class DriverDTO extends UserDTO {
     public void setFormattedAlerts(String formattedAlerts) {
         this.formattedAlerts = formattedAlerts;
     }
-
-    @Override
-    public String toString() {
-        return "DriverDTO {" +
-                "id=" + getEmail() +
-                ", fullName='" + getFullName() + '\'' +
-                ", password='" + getPassword() + '\'' + // Considera remover por segurança
-                ", phoneNumber='" + getPhoneNumber() + '\'' +
-                ", email='" + getEmail() + '\'' +
-                ", birthDate=" + getBirthDate() +
-                ", admissionDate=" + getAdmissionDate() +
-                ", userTypeId=" + getUserTypeId() +
-                ", emergencyContactId=" + getEmergencyContactId() +
-                ", updatedAt=" + getUpdatedAt() +
-                ", createdAt=" + getCreatedAt() +
-                ", emergencyContact=" + (emergencyContact != null ? emergencyContact : "null") +
-                ", vitals=" + vitals +
-                ", alerts=" + alerts +
-                '}';
-    }
 }
