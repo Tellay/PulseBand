@@ -13,7 +13,7 @@ import static com.pulseband.pulseband.utils.ResultSetUtils.getLocalDateTime;
 public class UserDAO {
     public UserDTO findByEmail(String email) throws SQLException {
         String query = "SELECT u.*, " +
-                "ec.id AS ec_id, ec.full_name AS ec_full_name, ec.phone_number AS ec_phone_number, ec.email AS ec_email, " +
+                "ec.id AS ec_id, ec.full_name AS ec_full_name, ec.phone AS ec_phone, ec.email AS ec_email, " +
                 "ec.created_at AS ec_created_at, ec.updated_at AS ec_updated_at " +
                 "FROM \"user\" u " +
                 "LEFT JOIN emergency_contact ec ON u.emergency_contact_id = ec.id " +
@@ -30,8 +30,8 @@ public class UserDAO {
                 return new UserDTO(
                         rs.getInt("id"),
                         rs.getString("full_name"),
-                        rs.getString("password"),
-                        rs.getString("phone_number"),
+                        rs.getString("password_hash"),
+                        rs.getString("phone"),
                         rs.getString("email"),
                         getLocalDateTime(rs, "birth_date"),
                         getLocalDateTime(rs, "admission_date"),

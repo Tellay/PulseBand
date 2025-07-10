@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<VBox spacing="10" xmlns="http://javafx.com/javafx" stylesheets="@../styles/globals.css,@../styles/dashboard.css" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.pulseband.pulseband.controllers.DashboardController" prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" spacing="10" stylesheets="@../styles/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.DashboardController">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
-    <HBox spacing="10" xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml">
-        <Label fx:id="welcomeLabel"/>
-        <Label fx:id="mqttConnectionStatusLabel" text="Status of MQTT connection..."/>
+    <HBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+        <Label fx:id="welcomeLabel" />
+        <Label fx:id="mqttConnectionStatusLabel" text="Status of MQTT connection..." />
     </HBox>
 
-    <TextArea fx:id="mqttMessagesReceivedTextArea" text="Messages received will appear here..." editable="false"
-              wrapText="true"/>
+    <TextArea fx:id="mqttMessagesReceivedTextArea" editable="false" text="Messages received will appear here..." wrapText="true" />
+   <Label fx:id="totalDriversLabel" text="Total drivers:">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font>
+   </Label>
 
-    <TableView fx:id="driversTable" prefWidth="800" prefHeight="400">
+    <TableView fx:id="driversTable" prefHeight="400" prefWidth="800">
         <columns>
-            <TableColumn fx:id="colId" text="Id" prefWidth="50" />
-            <TableColumn fx:id="colName" text="Name" prefWidth="150" />
-            <TableColumn fx:id="colEmail" text="Email" prefWidth="150" />
-            <TableColumn fx:id="colPhone" text="Phone number" prefWidth="100" />
-            <TableColumn fx:id="colBPMs" text="BPMs" prefWidth="250" />
-            <TableColumn fx:id="colAlerts" text="Alerts" prefWidth="450" />
-            <TableColumn fx:id="colEmergencyContact" text="Emergency contact" prefWidth="350" />
+            <TableColumn fx:id="colId" prefWidth="50" text="Id" />
+            <TableColumn fx:id="colName" prefWidth="150" text="Name" />
+            <TableColumn fx:id="colEmail" prefWidth="150" text="Email" />
+            <TableColumn fx:id="colPhone" prefWidth="100" text="Phone number" />
+            <TableColumn fx:id="colBPMs" prefWidth="250" text="BPMs" />
+            <TableColumn fx:id="colAlerts" prefWidth="450" text="Alerts" />
+            <TableColumn fx:id="colEmergencyContact" prefWidth="350" text="Emergency contact" />
         </columns>
     </TableView>
 </VBox>
-

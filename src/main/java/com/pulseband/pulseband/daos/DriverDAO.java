@@ -17,7 +17,7 @@ public class DriverDAO {
         List<DriverDTO> drivers = new ArrayList<>();
 
         String query = "SELECT u.*, " +
-                "ec.id AS ec_id, ec.full_name AS ec_full_name, ec.phone_number AS ec_phone_number, ec.email AS ec_email, " +
+                "ec.id AS ec_id, ec.full_name AS ec_full_name, ec.phone AS ec_phone, ec.email AS ec_email, " +
                 "ec.created_at AS ec_created_at, ec.updated_at AS ec_updated_at " +
                 "FROM \"user\" u " +
                 "LEFT JOIN emergency_contact ec ON u.emergency_contact_id = ec.id " +
@@ -37,8 +37,8 @@ public class DriverDAO {
                 DriverDTO driver = new DriverDTO(
                         driverId,
                         rs.getString("full_name"),
-                        rs.getString("password"),
-                        rs.getString("phone_number"),
+                        rs.getString("password_hash"),
+                        rs.getString("phone"),
                         rs.getString("email"),
                         getLocalDateTime(rs, "birth_date"),
                         getLocalDateTime(rs, "admission_date"),
@@ -58,6 +58,21 @@ public class DriverDAO {
         return drivers;
     }
 
+    private int countDrivers() throws SQLException {
+        String query = "SELECT COUNT(*) FROM \"user\" WHERE user_type_id = 3";
+
+        try (Connection conn = new DatabaseConnection().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if(rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
+    }
+
     private EmergencyContactDTO buildEmergencyContact(ResultSet rs) throws SQLException {
         int ecId = rs.getInt("ec_id");
         if (rs.wasNull()) return null;
@@ -65,7 +80,7 @@ public class DriverDAO {
         return new EmergencyContactDTO(
                 ecId,
                 rs.getString("ec_full_name"),
-                rs.getString("ec_phone_number"),
+                rs.getString("ec_phone"),
                 rs.getString("ec_email"),
                 getLocalDateTime(rs, "ec_updated_at"),
                 getLocalDateTime(rs, "ec_created_at")

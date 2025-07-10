@@ -6,7 +6,7 @@ public class UserDTO {
     private int id;
     private String fullName;
     private String password;
-    private String phoneNumber;
+    private String phone;
     private String email;
     private LocalDateTime birthDate;
     private LocalDateTime admissionDate;
@@ -15,11 +15,11 @@ public class UserDTO {
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 
-    public UserDTO(int id, String fullName, String password, String phoneNumber, String email, LocalDateTime birthDate, LocalDateTime admissionDate, int userTypeId, int emergencyContactId, LocalDateTime updatedAt, LocalDateTime createdAt) {
+    public UserDTO(int id, String fullName, String password, String phone, String email, LocalDateTime birthDate, LocalDateTime admissionDate, int userTypeId, int emergencyContactId, LocalDateTime updatedAt, LocalDateTime createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.password = password;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
         this.email = email;
         this.birthDate = birthDate;
         this.admissionDate = admissionDate;
@@ -53,12 +53,12 @@ public class UserDTO {
         this.password = password;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {
