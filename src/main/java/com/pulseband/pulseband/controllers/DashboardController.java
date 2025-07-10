@@ -1,6 +1,7 @@
 package com.pulseband.pulseband.controllers;
 
 import com.pulseband.pulseband.dtos.*;
+import com.pulseband.pulseband.email.EmailHandler;
 import com.pulseband.pulseband.mqtt.MqttClientManager;
 import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
@@ -135,18 +136,25 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
             driverService.addBpmDriverId(driverId, bpm);
             loadDrivers();
 
-            String decryptedTopic = new MqttConfig().getMqttAppDecypheredBpmTopic();
-            mqttClient.publish(decryptedTopic, String.valueOf(bpm));
+            mqttClient.publish(new MqttConfig().getMqttAppDecypheredBpmTopic(), String.valueOf(bpm));
+
+            if (bpm < 50) {
+                EmailHandler emailHandler = new EmailHandler(
+                        "joaomiguel.goncalves.1920@gmail.com",  // ✅ Coloque o e-mail de destino
+                        "amgrogordo123@gmail.com" // ✅ Remetente (o seu e-mail configurado)
+                );
+
+                emailHandler.sendEmail();
+            }
 
         } catch (NumberFormatException e) {
             System.out.println("Mensagem ignorada (não numérica): " + message);
-        } catch (SQLException e) {
+        } catch (SQLException | MqttException e) {
             e.printStackTrace();
-            showError("Erro ao salvar BPM no banco: " + e.getMessage());
-        } catch (MqttException e) {
-            throw new RuntimeException(e);
+            showError("Erro ao processar mensagem: " + e.getMessage());
         }
     }
+
 
     public void setUser(UserDTO user) {
         this.user = user;

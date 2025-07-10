@@ -13,6 +13,7 @@ module com.pulseband.pulseband {
     requires java.sql;
     requires jbcrypt;
     requires org.eclipse.paho.client.mqttv3;
+    requires jakarta.mail;
 
     opens com.pulseband.pulseband to javafx.fxml;
     exports com.pulseband.pulseband;
