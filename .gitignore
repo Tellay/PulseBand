@@ -40,3 +40,4 @@ build/
 ### Project ###
 /src/main/resources/db.properties
 /src/main/resources/mqtt.properties
+/src/main/resources/email.properties
