@@ -10,7 +10,7 @@ public class EmailConfig {
     public static final Properties properties = new Properties();
 
     public EmailConfig() {
-        try (InputStream input = DatabaseConfig.class.getResourceAsStream("/email.properties")) {
+        try (InputStream input = EmailConfig.class.getResourceAsStream("/email.properties")) {
             properties.load(input);
         } catch (IOException e) {
             throw new RuntimeException("Unable to find email.properties: ", e);
@@ -22,7 +22,7 @@ public class EmailConfig {
     }
 
     public String getEmailSmtpStartTlsEnable() {
-        return properties.getProperty("mail.starttls.enable");
+        return properties.getProperty("mail.smtp.starttls.enable");
     }
 
     public String getEmailSmtpHost() { return properties.getProperty("mail.smtp.host"); }

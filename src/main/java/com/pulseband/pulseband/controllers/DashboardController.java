@@ -140,8 +140,8 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
 
             if (bpm < 50) {
                 EmailHandler emailHandler = new EmailHandler(
-                        "joaomiguel.goncalves.1920@gmail.com",  // ✅ Coloque o e-mail de destino
-                        "amgrogordo123@gmail.com" // ✅ Remetente (o seu e-mail configurado)
+                        "hildafildo123@gmail.com",
+                        "amgrogordo123@gmail.com"
                 );
 
                 emailHandler.sendEmail();
