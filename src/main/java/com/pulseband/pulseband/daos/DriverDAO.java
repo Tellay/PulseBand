@@ -146,4 +146,19 @@ public class DriverDAO {
 
         return alerts;
     }
+
+    public void addBpmDriver(int driverId, int bpm) throws SQLException {
+        String query = "INSERT INTO vital (bpm, sensor_state_id, user_id, recorded_at) " +
+                "VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+
+        try (Connection conn = new DatabaseConnection().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, bpm);
+            stmt.setInt(2, 1);
+            stmt.setInt(3, driverId);
+
+            stmt.executeUpdate();
+        }
+    }
 }

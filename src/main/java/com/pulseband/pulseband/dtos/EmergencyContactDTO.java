@@ -5,15 +5,15 @@ import java.time.LocalDateTime;
 public class EmergencyContactDTO {
     private int id;
     private String fullName;
-    private String phoneNumber;
+    private String phone;
     private String email;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 
-    public EmergencyContactDTO(int id, String fullName, String phoneNumber, String email, LocalDateTime updatedAt, LocalDateTime createdAt) {
+    public EmergencyContactDTO(int id, String fullName, String phone, String email, LocalDateTime updatedAt, LocalDateTime createdAt) {
         this.id = id;
         this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
         this.email = email;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
@@ -35,12 +35,12 @@ public class EmergencyContactDTO {
         this.fullName = fullName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {

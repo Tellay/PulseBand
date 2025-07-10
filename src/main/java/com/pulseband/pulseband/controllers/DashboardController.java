@@ -39,6 +39,7 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
             2, "Medium",
             3, "High"
     );
+    private MqttClientManager mqttClient;
 
     public void initialize() {
         configureMqttClient();
@@ -49,10 +50,11 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
     private void configureMqttClient() {
         try {
             MqttConfig config = new MqttConfig();
-            MqttClientManager mqttClient = new MqttClientManager(
+            mqttClient = new MqttClientManager(
                     config.getMqttBrokerUrl(),
                     config.getMqttClientId(),
                     config.getMqttTopic(),
+                    config.getMqttAppDecypheredBpmTopic(),
                     this
             );
             mqttClient.setMessageHandler(this);
@@ -67,12 +69,12 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colPhone.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+        colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         colEmergencyContact.setCellValueFactory(cell -> {
             EmergencyContactDTO contact = cell.getValue().getEmergencyContact();
             String info = (contact != null)
-                    ? String.format("%s | %s | %s", contact.getFullName(), contact.getPhoneNumber(), contact.getEmail())
+                    ? String.format("%s | %s | %s", contact.getFullName(), contact.getPhone(), contact.getEmail())
                     : "No contact.";
             return new ReadOnlyStringWrapper(info);
         });
@@ -125,6 +127,25 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
     public void onMessageReceived(String topic, String message) {
         String formattedMessage = String.format("[%s] %s", topic, message);
         Platform.runLater(() -> mqttMessagesReceivedTextArea.appendText(formattedMessage + "\n"));
+
+        try {
+            int bpm = Integer.parseInt(message.trim());
+
+            int driverId = 2;
+            driverService.addBpmDriverId(driverId, bpm);
+            loadDrivers();
+
+            String decryptedTopic = new MqttConfig().getMqttAppDecypheredBpmTopic();
+            mqttClient.publish(decryptedTopic, String.valueOf(bpm));
+
+        } catch (NumberFormatException e) {
+            System.out.println("Mensagem ignorada (não numérica): " + message);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Erro ao salvar BPM no banco: " + e.getMessage());
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setUser(UserDTO user) {
