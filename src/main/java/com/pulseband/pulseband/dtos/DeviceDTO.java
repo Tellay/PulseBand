@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AlertDTO {
+public class DeviceDTO {
     private int id;
-    private String message;
-    private int severityId;
-    private AlertSeverityDTO severity;
+    private String deviceUid;
     private int userId;
-    private LocalDateTime createdAt;
+    private String deviceName;
+    private boolean isActive;
+    private LocalDateTime registeredAt;
 }

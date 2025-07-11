@@ -13,16 +13,7 @@ public class DriverService {
         this.driverDAO = new DriverDAO();
     }
 
-    /**
-     * Obtém todos os motoristas com contactos de emergência, sinais vitais e alertas.
-     * @return Lista de DriverDTOs com dados completos.
-     * @throws SQLException se houver erro de base de dados.
-     */
-    public List<DriverDTO> getAllDriversWithDetails() throws SQLException {
-        return driverDAO.findAllDrivers();
-    }
-
-    public void addBpmDriverId(int id, int bpm) throws SQLException {
-        driverDAO.addBpmDriver(id, bpm);
+    public List<DriverDTO> getAllDrivers() throws SQLException {
+        return driverDAO.getAllDriversBasic();
     }
 }

@@ -16,15 +16,6 @@ public class AuthService {
         this.userService = new UserService();
     }
 
-    /**
-     * Tenta autenticar um utilizador pelo email e password.
-     * @param email Email do utilizador.
-     * @param password Password do utilizador.
-     * @return UserDTO se autenticação for bem sucedida.
-     * @throws InvalidCredentialsException se as credenciais forem inválidas.
-     * @throws UnauthorizedUserTypeException se o tipo de utilizador não tiver permissão.
-     * @throws RuntimeException para erros inesperados na base de dados.
-     */
     public UserDTO login(String email, String password) throws InvalidCredentialsException, UnauthorizedUserTypeException {
         UserDTO user;
         try {
@@ -33,7 +24,7 @@ public class AuthService {
             throw new RuntimeException("Error finding user in database.", e);
         }
 
-        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
+        if (user == null || !BCrypt.checkpw(password, user.getPasswordHash())) {
             throw new InvalidCredentialsException("Wrong email or password.");
         }
 

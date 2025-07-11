@@ -25,8 +25,7 @@ public class LoginController {
 
     private final AuthService authService = new AuthService();
 
-    @FXML
-    public void initialize() {
+    @FXML public void initialize() {
         setupValidation();
     }
 
