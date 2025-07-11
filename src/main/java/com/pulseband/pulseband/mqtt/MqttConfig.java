@@ -28,4 +28,6 @@ public class MqttConfig {
     public String getMqttTopic() {
         return properties.getProperty("mqtt.topic");
     }
+
+    public String getMqttAppDecypheredBpmTopic() { return properties.getProperty("mqtt.appDecypheredBpmTopic"); }
 }

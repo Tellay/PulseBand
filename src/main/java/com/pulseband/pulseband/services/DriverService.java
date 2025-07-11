@@ -21,4 +21,8 @@ public class DriverService {
     public List<DriverDTO> getAllDriversWithDetails() throws SQLException {
         return driverDAO.findAllDrivers();
     }
+
+    public void addBpmDriverId(int id, int bpm) throws SQLException {
+        driverDAO.addBpmDriver(id, bpm);
+    }
 }

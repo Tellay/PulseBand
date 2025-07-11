@@ -39,6 +39,7 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
             2, "Medium",
             3, "High"
     );
+    private MqttClientManager mqttClient;
 
     public void initialize() {
         configureMqttClient();
@@ -49,10 +50,11 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
     private void configureMqttClient() {
         try {
             MqttConfig config = new MqttConfig();
-            MqttClientManager mqttClient = new MqttClientManager(
+            mqttClient = new MqttClientManager(
                     config.getMqttBrokerUrl(),
                     config.getMqttClientId(),
                     config.getMqttTopic(),
+                    config.getMqttAppDecypheredBpmTopic(),
                     this
             );
             mqttClient.setMessageHandler(this);
@@ -67,12 +69,12 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colPhone.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+        colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         colEmergencyContact.setCellValueFactory(cell -> {
             EmergencyContactDTO contact = cell.getValue().getEmergencyContact();
             String info = (contact != null)
-                    ? String.format("%s | %s | %s", contact.getFullName(), contact.getPhoneNumber(), contact.getEmail())
+                    ? String.format("%s | %s | %s", contact.getFullName(), contact.getPhone(), contact.getEmail())
                     : "No contact.";
             return new ReadOnlyStringWrapper(info);
         });
