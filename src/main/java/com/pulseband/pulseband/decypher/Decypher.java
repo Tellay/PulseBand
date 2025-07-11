@@ -20,9 +20,6 @@ public class Decypher {
     public static String decryptMessage(String base64Input) throws Exception {
         byte[] fullMessage = Base64.getDecoder().decode(base64Input);
 
-//        if (fullMessage.length <= 4) {
-//            throw new IllegalArgumentException("Mensagem muito curta.");
-//        }
 
         int dataLength = fullMessage.length - 4;
         byte[] encrypted = new byte[dataLength];
@@ -41,7 +38,7 @@ public class Decypher {
                 | (crcBytes[0] & 0xFFL);
 
         if (calculatedCrc != receivedCrc) {
-            throw new SecurityException("CRC inválido!");
+            throw new SecurityException("Invalid CRC!");
         }
 
         return decrypt3DES(encrypted).trim();

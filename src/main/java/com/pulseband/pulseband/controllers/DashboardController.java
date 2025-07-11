@@ -127,25 +127,6 @@ public class DashboardController implements MqttStatusListener, MqttMessageHandl
     public void onMessageReceived(String topic, String message) {
         String formattedMessage = String.format("[%s] %s", topic, message);
         Platform.runLater(() -> mqttMessagesReceivedTextArea.appendText(formattedMessage + "\n"));
-
-        try {
-            int bpm = Integer.parseInt(message.trim());
-
-            int driverId = 2;
-            driverService.addBpmDriverId(driverId, bpm);
-            loadDrivers();
-
-            String decryptedTopic = new MqttConfig().getMqttAppDecypheredBpmTopic();
-            mqttClient.publish(decryptedTopic, String.valueOf(bpm));
-
-        } catch (NumberFormatException e) {
-            System.out.println("Mensagem ignorada (não numérica): " + message);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showError("Erro ao salvar BPM no banco: " + e.getMessage());
-        } catch (MqttException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void setUser(UserDTO user) {
