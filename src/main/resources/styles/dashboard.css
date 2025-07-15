@@ -9,6 +9,40 @@
     -fx-font-size: 16px;
 }
 
+.mqtt-pill {
+    -fx-background-radius: 999px;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border;
+    -fx-alignment: center-left;
+    -fx-spacing: 6;
+    -fx-background-color: transparent;
+}
+
+/* Bordas da pill */
+.mqtt-pill.success {
+    -fx-border-color: -color-primary;
+}
+
+.mqtt-pill.error {
+    -fx-border-color: -color-dangerous;
+}
+
+/* Círculo - cor do fill conforme estado */
+.mqtt-pill.success > Circle {
+    -fx-fill: -color-primary; /* verde */
+}
+
+.mqtt-pill.error > Circle {
+    -fx-fill: -color-dangerous; /* vermelho */
+}
+
+/* Texto */
+.mqtt-pill-text {
+    -fx-font-weight: bold;
+    -fx-text-fill: #ccc;
+}
+
 .info-card {
     -fx-background-color: -color-card;
     -fx-border-color: -color-border;

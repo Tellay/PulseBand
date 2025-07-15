@@ -6,7 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.zip.CRC32;
 
-public class Decypher {
+public class Decipher {
 
     private static final byte[] keyBytes = new byte[]{
             (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67,

@@ -107,7 +107,7 @@ public class DriverDAO {
         String query = """
                     SELECT COUNT(DISTINCT user_id) AS active_drivers
                     FROM vital
-                    WHERE recorded_at >= NOW() - INTERVAL '24 HOURS';
+                    WHERE recorded_at >= NOW() - INTERVAL '10 SECONDS';
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
