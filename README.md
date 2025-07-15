@@ -48,3 +48,7 @@
 
 ## 📝 Manutenção
 - [ ] Tornar este README.md mais bonito.
+
+## 📺 Outros
+- [ ] Fazer a apresentação.
+- [ ] Rever o uso de `ON DELETE CASCADE`, pois em alguns casos não faz sentido.
