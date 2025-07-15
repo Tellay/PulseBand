@@ -15,8 +15,12 @@ public class Application extends javafx.application.Application {
         Parent loginRoot = loginLoader.load();
         Scene loginScene = new Scene(loginRoot);
 
+        FXMLLoader Dashboard2Loader = new FXMLLoader(getClass().getResource("/views/Dashboard2View.fxml"));
+        Parent dashboard2Root = Dashboard2Loader.load();
+        Scene dashbord2 = new Scene(dashboard2Root);
+
         stage.setTitle("PulseBand");
-        stage.setScene(loginScene);
+        stage.setScene(dashbord2);
         stage.setMaximized(true);
         stage.show();
 

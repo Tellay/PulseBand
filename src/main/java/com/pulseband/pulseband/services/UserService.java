@@ -4,7 +4,6 @@ import com.pulseband.pulseband.daos.UserDAO;
 import com.pulseband.pulseband.dtos.UserDTO;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class UserService {
     private final UserDAO userDAO;
@@ -14,6 +13,6 @@ public class UserService {
     }
 
     public UserDTO getUserByEmail(String email) throws SQLException {
-        return userDAO.findByEmail(email);
+        return userDAO.findUserByEmail(email);
     }
 }

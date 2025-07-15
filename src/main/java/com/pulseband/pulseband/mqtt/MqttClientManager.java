@@ -1,6 +1,6 @@
 package com.pulseband.pulseband.mqtt;
 
-import com.pulseband.pulseband.decypher.Decypher;
+import com.pulseband.pulseband.decipher.Decypher;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.nio.charset.StandardCharsets;

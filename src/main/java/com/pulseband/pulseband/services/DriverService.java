@@ -14,6 +14,18 @@ public class DriverService {
     }
 
     public List<DriverDTO> getAllDrivers() throws SQLException {
-        return driverDAO.getAllDriversBasic();
+        return driverDAO.findAllDrivers();
+    }
+
+    public int getTotalDrivers() throws SQLException {
+        return driverDAO.getTotalDrivers();
+    }
+
+    public int getActiveDrivers() throws SQLException {
+        return driverDAO.getActiveDrivers();
+    }
+
+    public int getAverageBpm() throws SQLException {
+        return driverDAO.getAverageBpm();
     }
 }

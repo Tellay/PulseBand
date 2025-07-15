@@ -25,6 +25,10 @@
     -fx-background-radius: 6px;
 }
 
+.button:hover {
+    -fx-background-color: -color-primary-hover;
+}
+
 .text-field, .password-field {
     -fx-background-color: -color-card;
     -fx-text-fill: -color-foreground;
@@ -33,4 +37,63 @@
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
+}
+
+.button, .text-field, .password-field {
+    -fx-padding: 8px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: -color-primary;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: -color-background;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-insets: 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-style: none;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .scroll-bar:horizontal,
+.scroll-pane .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-width: 0;
+    -fx-min-height: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
+}
+
+.no-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.no-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.no-scroll .scroll-bar:horizontal,
+.no-scroll .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-min-width: 0;
+    -fx-min-height: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
 }

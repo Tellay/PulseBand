@@ -12,3 +12,11 @@
 .feedback_label {
     -fx-text-fill: -color-dangerous;
 }
+
+.feedback_label.success {
+    -fx-text-fill: -color-primary;
+}
+
+.feedback_label.error {
+    -fx-text-fill: -color-dangerous;
+}

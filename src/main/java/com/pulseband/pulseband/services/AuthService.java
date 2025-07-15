@@ -1,10 +1,8 @@
-package com.pulseband.pulseband.auth;
+package com.pulseband.pulseband.services;
 
-import com.pulseband.pulseband.auth.exceptions.InvalidCredentialsException;
-import com.pulseband.pulseband.auth.exceptions.UnauthorizedUserTypeException;
-import com.pulseband.pulseband.daos.UserDAO;
+import com.pulseband.pulseband.exceptions.InvalidCredentialsException;
+import com.pulseband.pulseband.exceptions.UnauthorizedUserTypeException;
 import com.pulseband.pulseband.dtos.UserDTO;
-import com.pulseband.pulseband.services.UserService;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
@@ -28,8 +26,8 @@ public class AuthService {
             throw new InvalidCredentialsException("Wrong email or password.");
         }
 
-        int userType = user.getUserTypeId();
-        if (userType != 1 && userType != 2) {
+        String userTypeName = user.getUserTypeDTO().getName();
+        if (!userTypeName.equals("Administrator") && !userTypeName.equals("HR Staff")) {
             throw new UnauthorizedUserTypeException("Only administrators and RH members can enter.");
         }
 

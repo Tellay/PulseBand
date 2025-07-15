@@ -1,4 +1,4 @@
-package com.pulseband.pulseband.decypher;
+package com.pulseband.pulseband.decipher;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

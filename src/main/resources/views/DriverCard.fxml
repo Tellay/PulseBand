@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox maxWidth="1.7976931348623157E308" spacing="24.0" styleClass="driver-card"
+      stylesheets="@../styles/globals.css,@../styles/driver-card.css" xmlns="http://javafx.com/javafx/24.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.DriverCardController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+    </padding>
+    <HBox alignment="CENTER_LEFT" spacing="16.0">
+        <Label fx:id="nameLabel" maxWidth="1.7976931348623157E308" styleClass="driver-name" text="Name"
+               HBox.hgrow="ALWAYS"/>
+        <Circle fill="#65fe08" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
+    </HBox>
+    <VBox spacing="6.0">
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../images/phone_icon.png"/>
+            </ImageView>
+            <Label fx:id="phoneLabel" styleClass="driver-info" text="Phone number"/>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../images/email_icon.png"/>
+            </ImageView>
+            <Label fx:id="emailLabel" styleClass="driver-info" text="Email"/>
+        </HBox>
+    </VBox>
+    <HBox alignment="CENTER_LEFT" spacing="8.0">
+        <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/heart_icon_2.png"/>
+        </ImageView>
+        <Label fx:id="lastDriverBpm" styleClass="driver-bpm" text="72 BPM"/>
+    </HBox>
+    <VBox spacing="24.0" styleClass="emergency-contact-container">
+        <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+        </padding>
+        <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="8.0">
+            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../images/info_icon.png"/>
+            </ImageView>
+            <Label maxWidth="1.7976931348623157E308" styleClass="emergency-contact-title" text="Emergency Contact"
+                   HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <VBox spacing="6.0">
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/user_icon.png"/>
+                </ImageView>
+                <Label fx:id="emergencyContactNameLabel" styleClass="driver-info" text="Name"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/phone_icon.png"/>
+                </ImageView>
+                <Label fx:id="emergencyContactPhoneLabel" styleClass="driver-info" text="Phone number"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/email_icon.png"/>
+                </ImageView>
+                <Label fx:id="emergencyContactEmailLabel" styleClass="driver-info" text="Email"/>
+            </HBox>
+        </VBox>
+    </VBox>
+    <HBox spacing="16.0">
+        <Button fx:id="editDriverBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Edit"
+                HBox.hgrow="ALWAYS"/>
+        <Button fx:id="deleteDriverBtn" mnemonicParsing="false" text="Delete"/>
+    </HBox>
+</VBox>

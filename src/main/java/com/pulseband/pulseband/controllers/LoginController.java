@@ -1,8 +1,8 @@
 package com.pulseband.pulseband.controllers;
 
-import com.pulseband.pulseband.auth.AuthService;
-import com.pulseband.pulseband.auth.exceptions.InvalidCredentialsException;
-import com.pulseband.pulseband.auth.exceptions.UnauthorizedUserTypeException;
+import com.pulseband.pulseband.services.AuthService;
+import com.pulseband.pulseband.exceptions.InvalidCredentialsException;
+import com.pulseband.pulseband.exceptions.UnauthorizedUserTypeException;
 import com.pulseband.pulseband.dtos.UserDTO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -57,16 +57,20 @@ public class LoginController {
         try {
             UserDTO authenticatedUser = authService.login(email, password);
 
-            feedbackLabel.setText("Login successful. Welcome, " + authenticatedUser.getFullName() + "!");
+            showFeedback("Login successful, welcome " + authenticatedUser.getFullName() + "!", true);
             openDashboard(authenticatedUser);
-
         } catch (InvalidCredentialsException | UnauthorizedUserTypeException authEx) {
-            feedbackLabel.setText(authEx.getMessage());
-
+            showFeedback(authEx.getMessage(), false);
         } catch (Exception ex) {
-            feedbackLabel.setText("Unexpected error.");
+            showFeedback("Unexpected error.", false);
             ex.printStackTrace();
         }
+    }
+
+    private void showFeedback(String message, boolean isSuccess) {
+        feedbackLabel.setText(message);
+        feedbackLabel.getStyleClass().removeAll("success", "error");
+        feedbackLabel.getStyleClass().add(isSuccess ? "success" : "error");
     }
 
     private void openDashboard(UserDTO user) {
@@ -74,13 +78,14 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
             Parent root = loader.load();
 
+
             DashboardController dashboardController = loader.getController();
             dashboardController.setUser(user);
 
             Scene scene = loginBtn.getScene();
             scene.setRoot(root);
         } catch (IOException e) {
-            feedbackLabel.setText("Error opening dashboard.");
+            showFeedback("Error opening dashboard.", false);
             e.printStackTrace();
         }
     }
