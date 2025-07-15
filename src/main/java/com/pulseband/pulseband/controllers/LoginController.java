@@ -79,8 +79,8 @@ public class LoginController {
             Parent root = loader.load();
 
 
-            DashboardController dashboardController = loader.getController();
-            dashboardController.setUser(user);
+//            DashboardController dashboardController = loader.getController();
+//            dashboardController.setUser(user);
 
             Scene scene = loginBtn.getScene();
             scene.setRoot(root);

@@ -11,17 +11,29 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" spacing="24.0" stylesheets="@../styles/globals.css,@../styles/dashboard.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.Dashboard2Controller">
-    <VBox spacing="8.0">
-        <HBox spacing="8.0">
-            <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
-                <Image url="@../images/logo.png" />
-            </ImageView>
-            <Label styleClass="dashboard-title" text="Dashboard" />
-        </HBox>
-        <Label styleClass="dashboard-subtitle" text="Real-time monitoring of drivers' vital signs" />
-    </VBox>
+<VBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" spacing="24.0" stylesheets="@../styles/globals.css,@../styles/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.Dashboard2Controller">
+   <HBox alignment="CENTER_LEFT">
+      <children>
+          <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+              <HBox spacing="8.0">
+                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                      <Image url="@../images/logo.png" />
+                  </ImageView>
+                  <Label styleClass="dashboard-title" text="Dashboard" />
+              </HBox>
+              <Label styleClass="dashboard-subtitle" text="Real-time monitoring of drivers' vital signs" />
+          </VBox>
+          <HBox fx:id="mqttStatusPill" alignment="CENTER_LEFT" maxHeight="48.0" spacing="7.0" styleClass="mqtt-pill">
+            <Circle fx:id="mqttStatusCircle" fill="#333333" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
+              <Label fx:id="mqttStatusLabel" styleClass="mqtt-pill-text" text="Connecting!" />
+            <padding>
+               <Insets left="16.0" right="16.0" />
+            </padding>
+          </HBox>
+      </children>
+   </HBox>
 
     <HBox maxWidth="1.7976931348623157E308" spacing="16.0">
         <VBox maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card" HBox.hgrow="ALWAYS">
@@ -91,9 +103,9 @@
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="no_scroll" vbarPolicy="NEVER">
         <GridPane fx:id="driverGridPane" hgap="16" vgap="16">
             <columnConstraints>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33" />
+                <ColumnConstraints percentWidth="33.33" />
+                <ColumnConstraints percentWidth="33.33" />
             </columnConstraints>
         </GridPane>
     </ScrollPane>

@@ -1,16 +1,24 @@
 package com.pulseband.pulseband.controllers;
 
 import com.pulseband.pulseband.dtos.DriverDTO;
+import com.pulseband.pulseband.mqtt.MqttClientManager;
+import com.pulseband.pulseband.mqtt.MqttConfig;
+import com.pulseband.pulseband.mqtt.MqttMessageHandler;
+import com.pulseband.pulseband.mqtt.MqttStatusListener;
 import com.pulseband.pulseband.services.DriverService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,6 +32,12 @@ public class Dashboard2Controller {
     private static final int GRID_COLUMNS = 3;
 
     @FXML
+    private HBox mqttStatusPill;
+    @FXML
+    private Circle mqttStatusCircle;
+    @FXML
+    private Label mqttStatusLabel;
+    @FXML
     private Label totalDriversLabel;
     @FXML
     private Label activeDriversLabel;
@@ -36,20 +50,61 @@ public class Dashboard2Controller {
 
     private final DriverService driverService = new DriverService();
     private List<DriverDTO> allDrivers;
+    private MqttClientManager mqttClientManager;
 
     @FXML
     public void initialize() {
-        // Carrega os dados iniciais diretamente, sem chamadas recursivas
+        setupMqttClient();
         loadAllDrivers();
         loadStatistics();
 
-        // Só exibe se a lista foi carregada com sucesso
         if (allDrivers != null && !allDrivers.isEmpty()) {
             showDrivers(allDrivers);
         }
 
         setupSearchFilter();
         setupAutoRefresh();
+    }
+
+    public void setupMqttClient() {
+        try {
+            MqttConfig mqttConfig = new MqttConfig();
+            mqttClientManager = new MqttClientManager(
+                    mqttConfig.getMqttBrokerUrl(),
+                    mqttConfig.getMqttClientId(),
+                    mqttConfig.getMqttTopic(),
+                    mqttConfig.getMqttAppDecypheredBpmTopic(),
+                    getMqttStatusListener()
+            );
+
+            mqttClientManager.setMessageHandler(getMessageHandler());
+            mqttClientManager.connectAsync();
+
+        } catch (MqttException e) {
+            handleMqttSetupError(e);
+        }
+    }
+
+
+    private MqttStatusListener getMqttStatusListener() {
+        return (connected, message) -> Platform.runLater(() -> updateMqttStatus(connected, message));
+    }
+
+    private MqttMessageHandler getMessageHandler() {
+        return (topic, message) -> {
+            System.out.println("MQTT message: " + message);
+        };
+    }
+
+    private void updateMqttStatus(boolean connected, String message) {
+        mqttStatusLabel.setText(message);
+        mqttStatusPill.getStyleClass().removeAll("success", "error");
+        mqttStatusPill.getStyleClass().add(connected ? "success" : "error");
+    }
+
+    private void handleMqttSetupError(MqttException e) {
+        updateMqttStatus(false, e.getMessage());
+        e.printStackTrace();
     }
 
     private void loadAllDrivers() {
@@ -150,14 +205,12 @@ public class Dashboard2Controller {
     }
 
     private boolean matchesFilter(DriverDTO driver, String normalizedFilter) {
-        // Verifica campos do driver principal
         if (containsIgnoreCase(driver.getFullName(), normalizedFilter) ||
                 containsIgnoreCase(driver.getPhone(), normalizedFilter) ||
                 containsIgnoreCase(driver.getEmail(), normalizedFilter)) {
             return true;
         }
 
-        // Verifica campos do contacto de emergência
         var emergencyContact = driver.getEmergencyContactDTO();
         if (emergencyContact != null) {
             return containsIgnoreCase(emergencyContact.getFullName(), normalizedFilter) ||
@@ -174,7 +227,6 @@ public class Dashboard2Controller {
 
     private void setupAutoRefresh() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(SECONDS_TO_REFRESH), event -> {
-            // Recarrega apenas os dados necessários, sem recriar toda a estrutura
             refreshDashboard();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -186,11 +238,9 @@ public class Dashboard2Controller {
     private void refreshDashboard() {
         System.out.println("Refreshing dashboard...");
 
-        // Recarrega os dados
         loadAllDrivers();
         loadStatistics();
 
-        // Mantém o filtro atual se existir
         String currentFilter = searchDriversInput.getText();
         if (currentFilter != null && !currentFilter.isBlank()) {
             filterDrivers(currentFilter);
