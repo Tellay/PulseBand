@@ -15,7 +15,7 @@ public class Application extends javafx.application.Application {
         Parent loginRoot = loginLoader.load();
         Scene loginScene = new Scene(loginRoot);
 
-        FXMLLoader Dashboard2Loader = new FXMLLoader(getClass().getResource("/views/Dashboard2View.fxml"));
+        FXMLLoader Dashboard2Loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
         Parent dashboard2Root = Dashboard2Loader.load();
         Scene dashbord2 = new Scene(dashboard2Root);
 

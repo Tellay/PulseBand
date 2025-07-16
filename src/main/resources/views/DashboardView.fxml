@@ -28,7 +28,7 @@
             <Label styleClass="dashboard-subtitle" text="Real-time monitoring of drivers' vital signs"/>
         </VBox>
         <HBox alignment="CENTER_LEFT" spacing="16.0">
-            <Label fx:id="remainingTimeLabel" styleClass="remaining-time" text="0 seconds to refresh"/>
+            <Label fx:id="remainingTimeLabel" styleClass="remaining-time" text="Refreshing in 20s..."/>
             <HBox fx:id="mqttStatusPill" alignment="CENTER_LEFT" maxHeight="48.0" spacing="7.0" styleClass="mqtt-pill">
                 <Circle fx:id="mqttStatusCircle" fill="#333333" radius="5.0" stroke="BLACK" strokeType="INSIDE"/>
                 <Label fx:id="mqttStatusLabel" styleClass="mqtt-pill-text" text="Connecting!"/>
@@ -36,7 +36,7 @@
                     <Insets left="16.0" right="16.0"/>
                 </padding>
             </HBox>
-            <Button mnemonicParsing="false" text="Log out"/>
+            <Button fx:id="logOutBtn" mnemonicParsing="false" text="Log out" onAction="#handleLogOutAction"/>
         </HBox>
     </HBox>
 

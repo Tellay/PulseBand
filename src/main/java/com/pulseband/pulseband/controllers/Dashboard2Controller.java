@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pulseband.pulseband.dtos.DriverDTO;
 import com.pulseband.pulseband.dtos.EmergencyContactDTO;
+import com.pulseband.pulseband.dtos.UserDTO;
 import com.pulseband.pulseband.mqtt.MqttClientManager;
 import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
@@ -46,11 +47,15 @@ public class Dashboard2Controller {
     @FXML
     private Label mqttStatusLabel;
     @FXML
+    private Button logOutBtn;
+    @FXML
     private Label totalDriversLabel;
     @FXML
     private Label activeDriversLabel;
     @FXML
     private Label averageBpmLabel;
+    @FXML
+    private Label remainingTimeLabel;
     @FXML
     private TextField searchDriversInput;
     @FXML
@@ -249,11 +254,24 @@ public class Dashboard2Controller {
     }
 
     private void setupAutoRefresh() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(SECONDS_TO_REFRESH), event -> refreshDashboard()));
+        final int[] remainingTime = {SECONDS_TO_REFRESH};
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> {
+                    remainingTime[0]--;
+                    remainingTimeLabel.setText("Refreshing in " + remainingTime[0] + "s...");
+
+                    if (remainingTime[0] == 0) {
+                        refreshDashboard();
+                        remainingTime[0] = SECONDS_TO_REFRESH;
+                    }
+                })
+        );
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-        System.out.println("Auto-refresh programmed every " + SECONDS_TO_REFRESH + " seconds");
     }
+
 
     private void refreshDashboard() {
         System.out.println("Updating dashboard...");
@@ -330,6 +348,23 @@ public class Dashboard2Controller {
                 e.printStackTrace();
                 showError("Error", "Could not delete driver.");
             }
+        }
+    }
+
+    @FXML
+    public void handleLogOutAction(ActionEvent event) {
+        openLogin();
+    }
+
+    private void openLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoginView.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = logOutBtn.getScene();
+            scene.setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
