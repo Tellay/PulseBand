@@ -13,88 +13,102 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<VBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" spacing="24.0" stylesheets="@../styles/globals.css,@../styles/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.Dashboard2Controller">
-   <HBox alignment="CENTER_LEFT">
-      <children>
-          <VBox spacing="8.0" HBox.hgrow="ALWAYS">
-              <HBox spacing="8.0">
-                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
-                      <Image url="@../images/logo.png" />
-                  </ImageView>
-                  <Label styleClass="dashboard-title" text="Dashboard" />
-              </HBox>
-              <Label styleClass="dashboard-subtitle" text="Real-time monitoring of drivers' vital signs" />
-          </VBox>
-          <HBox fx:id="mqttStatusPill" alignment="CENTER_LEFT" maxHeight="48.0" spacing="7.0" styleClass="mqtt-pill">
-            <Circle fx:id="mqttStatusCircle" fill="#333333" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
-              <Label fx:id="mqttStatusLabel" styleClass="mqtt-pill-text" text="Connecting!" />
-            <padding>
-               <Insets left="16.0" right="16.0" />
-            </padding>
-          </HBox>
-      </children>
-   </HBox>
+<VBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0" spacing="24.0" stylesheets="@../styles/globals.css,@../styles/dashboard.css"
+      xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pulseband.pulseband.controllers.Dashboard2Controller">
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+            <HBox spacing="8.0">
+                <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/logo.png"/>
+                </ImageView>
+                <Label styleClass="dashboard-title" text="Dashboard"/>
+            </HBox>
+            <Label styleClass="dashboard-subtitle" text="Real-time monitoring of drivers' vital signs"/>
+        </VBox>
+        <HBox alignment="CENTER_LEFT" spacing="16.0">
+            <Label fx:id="remainingTimeLabel" styleClass="remaining-time" text="0 seconds to refresh"/>
+            <HBox fx:id="mqttStatusPill" alignment="CENTER_LEFT" maxHeight="48.0" spacing="7.0" styleClass="mqtt-pill">
+                <Circle fx:id="mqttStatusCircle" fill="#333333" radius="5.0" stroke="BLACK" strokeType="INSIDE"/>
+                <Label fx:id="mqttStatusLabel" styleClass="mqtt-pill-text" text="Connecting!"/>
+                <padding>
+                    <Insets left="16.0" right="16.0"/>
+                </padding>
+            </HBox>
+            <Button mnemonicParsing="false" text="Log out"/>
+        </HBox>
+    </HBox>
 
     <HBox maxWidth="1.7976931348623157E308" spacing="16.0">
         <VBox maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="16.0">
-                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Total Drivers" HBox.hgrow="ALWAYS" />
+                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Total Drivers"
+                       HBox.hgrow="ALWAYS"/>
                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/users_icon.png" />
+                    <Image url="@../images/users_icon.png"/>
                 </ImageView>
             </HBox>
-            <Label fx:id="totalDriversLabel" styleClass="info-card-value" text="0" />
+            <Label fx:id="totalDriversLabel" styleClass="info-card-value" text="0"/>
             <padding>
-                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
             </padding>
         </VBox>
 
-        <VBox layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card" HBox.hgrow="ALWAYS">
+        <VBox layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card"
+              HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="16.0">
-                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Active Drivers" HBox.hgrow="ALWAYS" />
+                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Active Drivers"
+                       HBox.hgrow="ALWAYS"/>
                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/activity_icon.png" />
+                    <Image url="@../images/activity_icon.png"/>
                 </ImageView>
             </HBox>
-            <Label fx:id="activeDriversLabel" styleClass="info-card-value" text="0" />
+            <Label fx:id="activeDriversLabel" styleClass="info-card-value" text="0"/>
             <padding>
-                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
             </padding>
         </VBox>
 
-        <VBox layoutX="210.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card" HBox.hgrow="ALWAYS">
+        <VBox layoutX="210.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card"
+              HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="16.0">
-                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Average BPM" HBox.hgrow="ALWAYS" />
+                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Average BPM"
+                       HBox.hgrow="ALWAYS"/>
                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/heart_icon.png" />
+                    <Image url="@../images/heart_icon.png"/>
                 </ImageView>
             </HBox>
-            <Label fx:id="averageBpmLabel" styleClass="info-card-value" text="0" />
+            <Label fx:id="averageBpmLabel" styleClass="info-card-value" text="0"/>
             <padding>
-                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
             </padding>
         </VBox>
 
-        <VBox layoutX="410.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card" HBox.hgrow="ALWAYS">
+        <VBox layoutX="410.0" layoutY="10.0" maxWidth="1.7976931348623157E308" spacing="16.0" styleClass="info-card"
+              HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="16.0">
-                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Active Alerts" HBox.hgrow="ALWAYS" />
+                <Label maxWidth="1.7976931348623157E308" styleClass="info-card-title" text="Active Alerts"
+                       HBox.hgrow="ALWAYS"/>
                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/siren_icon.png" />
+                    <Image url="@../images/siren_icon.png"/>
                 </ImageView>
             </HBox>
-            <Label styleClass="info-card-value" text="0" />
+            <Label styleClass="info-card-value" text="0"/>
             <padding>
-                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
             </padding>
         </VBox>
     </HBox>
 
     <HBox spacing="16.0">
-        <TextField fx:id="searchDriversInput" maxWidth="1.7976931348623157E308" promptText="Search drivers..." HBox.hgrow="ALWAYS" />
-        <Button fx:id="addDriverButton" onAction="#handleAddDriverAction" graphicTextGap="8.0" mnemonicParsing="false" text="Add Driver" textOverrun="CLIP">
+        <TextField fx:id="searchDriversInput" maxWidth="1.7976931348623157E308" promptText="Search drivers..."
+                   HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addDriverButton" onAction="#handleAddDriverAction" graphicTextGap="8.0" mnemonicParsing="false"
+                text="Add Driver" textOverrun="CLIP">
             <graphic>
                 <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/add_user_icon.png" />
+                    <Image url="@../images/add_user_icon.png"/>
                 </ImageView>
             </graphic>
         </Button>
@@ -103,14 +117,14 @@
     <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="no_scroll" vbarPolicy="NEVER">
         <GridPane fx:id="driverGridPane" hgap="16" vgap="16">
             <columnConstraints>
-                <ColumnConstraints percentWidth="33.33" />
-                <ColumnConstraints percentWidth="33.33" />
-                <ColumnConstraints percentWidth="33.33" />
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
             </columnConstraints>
         </GridPane>
     </ScrollPane>
 
     <padding>
-        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0"/>
     </padding>
 </VBox>
