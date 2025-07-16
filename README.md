@@ -52,3 +52,4 @@
 ## 📺 Outros
 - [ ] Fazer a apresentação.
 - [ ] Rever o uso de `ON DELETE CASCADE`, pois em alguns casos não faz sentido.
+- [ ] Traduzir as mensagens do código do ESP.
