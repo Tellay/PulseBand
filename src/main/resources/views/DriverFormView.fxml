@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="12" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.pulseband.pulseband.controllers.DriverFormController"
+      alignment="CENTER_LEFT"
+      stylesheets="@../styles/globals.css">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label fx:id="formTitleLabel" text="Add New Driver"
+           style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="fullNameField" promptText="Full Name" />
+    <TextField fx:id="emailField" promptText="Email" />
+    <TextField fx:id="phoneField" promptText="Phone" />
+    <PasswordField fx:id="passwordField" promptText="Password" />
+    <DatePicker fx:id="birthDatePicker" promptText="Birth Date" />
+    <DatePicker fx:id="admissionDatePicker" promptText="Admission Date" />
+
+    <Separator />
+    <Label text="Emergency Contact" style="-fx-font-size: 14px;" />
+    <TextField fx:id="emergencyNameField" promptText="Contact Name" />
+    <TextField fx:id="emergencyPhoneField" promptText="Contact Phone" />
+    <TextField fx:id="emergencyEmailField" promptText="Contact Email" />
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#onCancel" />
+        <Button fx:id="confirmButton" text="Add" onAction="#onAddDriver" defaultButton="true" />
+    </HBox>
+</VBox>

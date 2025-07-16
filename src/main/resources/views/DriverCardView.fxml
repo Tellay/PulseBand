@@ -74,7 +74,7 @@
     </VBox>
     <HBox spacing="16.0">
         <Button fx:id="editDriverBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Edit"
-                HBox.hgrow="ALWAYS"/>
-        <Button fx:id="deleteDriverBtn" mnemonicParsing="false" text="Delete"/>
+                HBox.hgrow="ALWAYS" onAction="#handleEditDriverAction"/>
+        <Button fx:id="deleteDriverBtn" mnemonicParsing="false" text="Delete" onAction="#handleDeleteDriverAction"/>
     </HBox>
 </VBox>

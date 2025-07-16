@@ -14,6 +14,8 @@ module com.pulseband.pulseband {
     requires jbcrypt;
     requires org.eclipse.paho.client.mqttv3;
     requires org.postgresql.jdbc;
+    requires com.google.gson;
+    requires java.desktop;
 
     opens com.pulseband.pulseband to javafx.fxml;
     exports com.pulseband.pulseband;

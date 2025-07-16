@@ -8,14 +8,14 @@ import java.nio.charset.StandardCharsets;
 public class MqttClientManager {
     private final MqttClient client;
     private MqttMessageHandler messageHandler;
-    private final String topic;
-    private final String appTopic;
+    private final String bpmTopic;
+    private final String alertTopic;
     private final MqttStatusListener listener;
     private boolean connected = false;
 
-    public MqttClientManager(String brokerUrl, String clientId, String topic, String appTopic, MqttStatusListener listener) throws MqttException {
-        this.topic = topic;
-        this.appTopic = appTopic;
+    public MqttClientManager(String brokerUrl, String clientId, String bpmTopic, String alertTopic, MqttStatusListener listener) throws MqttException {
+        this.bpmTopic = bpmTopic;
+        this.alertTopic = alertTopic;
         this.listener = listener;
 
         client = new MqttClient(brokerUrl, clientId);
@@ -56,7 +56,8 @@ public class MqttClientManager {
                 client.connect(options);
                 connected = true;
                 listener.onConnectionStatusChanged(true, "Connected!");
-                subscribe(topic);
+                subscribe(bpmTopic);
+                subscribe(alertTopic);
             } catch (MqttException e) {
                 connected = false;
                 listener.onConnectionStatusChanged(false, "Error!");

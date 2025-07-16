@@ -18,11 +18,11 @@
 ## 🛠️ Em Desenvolvimento
 
 ### Funcionalidades de Motoristas
-- [ ] Adicionar novo motorista.
+- [X] Adicionar novo motorista.
 - [X] Adicionar BPMs dos motoristas à base de dados recebidos via MQTT.
 - [ ] Mostrar alertas passados dos motoristas.
-- [ ] Editar motorista.
-- [ ] Eliminar motorista.
+- [X] Editar motorista.
+- [X] Eliminar motorista.
 
 ### Melhorias Visuais e de UI
 - [ ] Adicionar ícones aos botões de editar e eliminar.
@@ -52,4 +52,4 @@
 ## 📺 Outros
 - [ ] Fazer a apresentação.
 - [ ] Rever o uso de `ON DELETE CASCADE`, pois em alguns casos não faz sentido.
-- [ ] Traduzir as mensagens do código do ESP.
+- [X] Traduzir as mensagens do código do ESP.

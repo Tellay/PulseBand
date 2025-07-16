@@ -4,12 +4,10 @@ import com.pulseband.pulseband.db.DatabaseConnection;
 import com.pulseband.pulseband.dtos.DriverDTO;
 import com.pulseband.pulseband.dtos.EmergencyContactDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.SQLException;
 
 public class DriverDAO {
     public List<DriverDTO> findAllDrivers() throws SQLException {
@@ -21,6 +19,8 @@ public class DriverDAO {
                       u.full_name,
                       u.phone,
                       u.email,
+                      u.birth_date,            -- ⬅️ novo
+                      u.admission_date,
                       v.bpm AS last_bpm,
                       ec.id AS emergency_contact_id,  -- <== adiciona esta linha
                       ec.full_name AS emergency_contact_name,
@@ -49,6 +49,12 @@ public class DriverDAO {
                 String phone = rs.getString("phone");
                 String email = rs.getString("email");
 
+                Timestamp birthTimestamp = rs.getTimestamp("birth_date");
+                Timestamp admissionTimestamp = rs.getTimestamp("admission_date");
+
+                LocalDateTime birthDate = (birthTimestamp != null) ? birthTimestamp.toLocalDateTime() : null;
+                LocalDateTime admissionDate = (admissionTimestamp != null) ? admissionTimestamp.toLocalDateTime() : null;
+
 
                 int emergencyContactId = rs.getInt("emergency_contact_id");
                 String emergencyContactFullName = rs.getString("emergency_contact_name");
@@ -75,6 +81,8 @@ public class DriverDAO {
                     driver.setLastBpm(bpm);
                 }
 
+                driver.setBirthDate(birthDate);
+                driver.setAdmissionDate(admissionDate);
                 drivers.add(driver);
             }
         }
@@ -137,9 +145,184 @@ public class DriverDAO {
         return 0;
     }
 
-    // ! Implement active alerts
+    public boolean insertDriverBpm(int userId, int bpm) throws SQLException {
+        String query = """
+        INSERT INTO vital (user_id, bpm)
+        VALUES (?, ?);
+    """;
 
-    public void deleteDriver(int driverId) throws  SQLException {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
 
+            ps.setInt(1, userId);
+            ps.setInt(2, bpm);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+
+
+    public boolean insertDriverAlert(int userId, String message) throws SQLException {
+        String query = """
+        INSERT INTO alert (user_id, message)
+        VALUES (?, ?);
+    """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, userId);
+            ps.setString(2, message);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+
+    public void addDriver(DriverDTO driver, EmergencyContactDTO emergencyContact) throws SQLException {
+        String insertContactSql = """
+        INSERT INTO emergency_contact (full_name, phone, email)
+        VALUES (?, ?, ?)
+    """;
+
+        String insertDriverSql = """
+        INSERT INTO "user" (
+            full_name,
+            password_hash,
+            phone,
+            email,
+            birth_date,
+            admission_date,
+            user_type_id,
+            emergency_contact_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """;
+
+        try (Connection conn = DatabaseConnection .getConnection()) {
+            conn.setAutoCommit(false);
+
+            int emergencyContactId;
+            try (PreparedStatement stmt = conn.prepareStatement(insertContactSql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, emergencyContact.getFullName());
+                stmt.setString(2, emergencyContact.getPhone());
+                stmt.setString(3, emergencyContact.getEmail());
+                stmt.executeUpdate();
+
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        emergencyContactId = rs.getInt(1);
+                    } else {
+                        conn.rollback();
+                        throw new SQLException("Não foi possível obter o ID do contacto de emergência.");
+                    }
+                }
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(insertDriverSql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, driver.getFullName());
+                stmt.setString(2, driver.getPasswordHash());
+                stmt.setString(3, driver.getPhone());
+                stmt.setString(4, driver.getEmail());
+                stmt.setObject(5, driver.getBirthDate());
+                stmt.setObject(6, driver.getAdmissionDate());
+                stmt.setInt(7, driver.getUserTypeId());
+                stmt.setInt(8, emergencyContactId);
+
+                stmt.executeUpdate();
+
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        driver.setId(rs.getInt(1));
+                    } else {
+                        conn.rollback();
+                        throw new SQLException("Não foi possível obter o ID do motorista.");
+                    }
+                }
+            }
+
+            conn.commit();
+
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao inserir motorista e contacto de emergência: " + e.getMessage(), e);
+        }
+    }
+
+    public void editDriver(DriverDTO driver, EmergencyContactDTO emergencyContact) throws SQLException {
+        String updateUserWithPasswordSql = """
+        UPDATE "user" SET
+            full_name = ?,
+            email = ?,
+            phone = ?,
+            birth_date = ?,
+            admission_date = ?,
+            password_hash = ?
+        WHERE id = ?
+    """;
+
+        String updateUserWithoutPasswordSql = """
+        UPDATE "user" SET
+            full_name = ?,
+            email = ?,
+            phone = ?,
+            birth_date = ?,
+            admission_date = ?
+        WHERE id = ?
+    """;
+
+        String updateContactSql = """
+        UPDATE emergency_contact SET
+            full_name = ?,
+            phone = ?,
+            email = ?
+        WHERE id = ?
+    """;
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (
+                    PreparedStatement updateUserStmt = conn.prepareStatement(
+                            driver.getPasswordHash() != null ? updateUserWithPasswordSql : updateUserWithoutPasswordSql);
+                    PreparedStatement updateContactStmt = conn.prepareStatement(updateContactSql)
+            ) {
+                updateUserStmt.setString(1, driver.getFullName());
+                updateUserStmt.setString(2, driver.getEmail());
+                updateUserStmt.setString(3, driver.getPhone());
+                updateUserStmt.setObject(4, driver.getBirthDate());
+                updateUserStmt.setObject(5, driver.getAdmissionDate());
+
+                if (driver.getPasswordHash() != null) {
+                    updateUserStmt.setString(6, driver.getPasswordHash());
+                    updateUserStmt.setInt(7, driver.getId());
+                } else {
+                    updateUserStmt.setInt(6, driver.getId());
+                }
+
+                updateUserStmt.executeUpdate();
+
+                updateContactStmt.setString(1, emergencyContact.getFullName());
+                updateContactStmt.setString(2, emergencyContact.getPhone());
+                updateContactStmt.setString(3, emergencyContact.getEmail());
+                updateContactStmt.setInt(4, emergencyContact.getId());
+
+                updateContactStmt.executeUpdate();
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void deleteDriver(int driverId) throws SQLException {
+        String deleteSql = "DELETE FROM \"user\" WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(deleteSql)) {
+            stmt.setInt(1, driverId);
+            stmt.executeUpdate();
+        }
     }
 }

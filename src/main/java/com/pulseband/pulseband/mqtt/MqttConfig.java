@@ -25,9 +25,9 @@ public class MqttConfig {
         return properties.getProperty("mqtt.clientId");
     }
 
-    public String getMqttTopic() {
-        return properties.getProperty("mqtt.topic");
+    public String getMqttBpmTopic() {
+        return properties.getProperty("mqtt.bpmTopic");
     }
 
-    public String getMqttAppDecypheredBpmTopic() { return properties.getProperty("mqtt.appDecypheredBpmTopic"); }
+    public String getMqttAlertTopic() { return properties.getProperty("mqtt.alertTopic"); }
 }

@@ -75,7 +75,7 @@ public class LoginController {
 
     private void openDashboard(UserDTO user) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DashboardView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Dashboard2View.fxml"));
             Parent root = loader.load();
 
 

@@ -1,6 +1,9 @@
 package com.pulseband.pulseband.controllers;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pulseband.pulseband.dtos.DriverDTO;
+import com.pulseband.pulseband.dtos.EmergencyContactDTO;
 import com.pulseband.pulseband.mqtt.MqttClientManager;
 import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
@@ -9,20 +12,25 @@ import com.pulseband.pulseband.services.DriverService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pulseband.pulseband.utils.TextUtils.normalize;
@@ -52,36 +60,34 @@ public class Dashboard2Controller {
     private List<DriverDTO> allDrivers;
     private MqttClientManager mqttClientManager;
 
+    private final DriverDTO driver = new DriverDTO();
+    private final EmergencyContactDTO emergencyContact = new EmergencyContactDTO();
+
     @FXML
     public void initialize() {
         setupMqttClient();
         loadAllDrivers();
         loadStatistics();
-
-        if (allDrivers != null && !allDrivers.isEmpty()) {
-            showDrivers(allDrivers);
-        }
-
+        renderDriverCards();
         setupSearchFilter();
         setupAutoRefresh();
     }
 
-    public void setupMqttClient() {
+    private void setupMqttClient() {
         try {
             MqttConfig mqttConfig = new MqttConfig();
             mqttClientManager = new MqttClientManager(
                     mqttConfig.getMqttBrokerUrl(),
                     mqttConfig.getMqttClientId(),
-                    mqttConfig.getMqttTopic(),
-                    mqttConfig.getMqttAppDecypheredBpmTopic(),
+                    mqttConfig.getMqttBpmTopic(),
+                    mqttConfig.getMqttAlertTopic(),
                     getMqttStatusListener()
             );
-
             mqttClientManager.setMessageHandler(getMessageHandler());
             mqttClientManager.connectAsync();
-
         } catch (MqttException e) {
-            handleMqttSetupError(e);
+            updateMqttStatus(false, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -92,7 +98,62 @@ public class Dashboard2Controller {
     private MqttMessageHandler getMessageHandler() {
         return (topic, message) -> {
             System.out.println("MQTT message: " + message);
+            handleIncomingMessage(message);
         };
+    }
+
+    private void handleIncomingMessage(String message) {
+        try {
+            JsonObject json = JsonParser.parseString(message).getAsJsonObject();
+            if (!json.has("id")) return;
+
+            int id = json.get("id").getAsInt();
+            Optional<DriverDTO> optDriver = allDrivers.stream()
+                    .filter(driver -> driver.getId() == id)
+                    .findFirst();
+
+            optDriver.ifPresent(driver -> {
+                if (json.has("status")) {
+                    String msg = json.get("status").getAsString();
+                    driver.setTemporaryStatus(msg);
+                    System.out.println("⚠ Temporary state: " + driver.getFullName() + " | " + msg);
+                }
+
+                // ✅ BPM RECEBIDO
+                if (json.has("bpm")) {
+                    int bpm = json.get("bpm").getAsInt();
+                    try {
+                        driverService.insertDriverBpm(id, bpm);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    driver.setTemporaryStatus(null);
+                    System.out.println("✅ Updated BPM of " + driver.getFullName() + ": " + bpm);
+                }
+
+                if (json.has("alert")) {
+                    String alert = json.get("alert").getAsString();
+                    try {
+                        driverService.insertDriverAlert(id, alert);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("⚠ ALERT for " + driver.getFullName() + ": " + alert);
+                }
+            });
+
+            Platform.runLater(() -> {
+                String currentFilter = searchDriversInput.getText();
+                if (currentFilter != null && !currentFilter.isBlank()) {
+                    filterDrivers(currentFilter);
+                } else if (allDrivers != null) {
+                    showDrivers(allDrivers);
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Error processing JSON from MQTT: " + e.getMessage());
+        }
     }
 
     private void updateMqttStatus(boolean connected, String message) {
@@ -101,123 +162,86 @@ public class Dashboard2Controller {
         mqttStatusPill.getStyleClass().add(connected ? "success" : "error");
     }
 
-    private void handleMqttSetupError(MqttException e) {
-        updateMqttStatus(false, e.getMessage());
-        e.printStackTrace();
-    }
-
     private void loadAllDrivers() {
         try {
             allDrivers = driverService.getAllDrivers();
         } catch (SQLException e) {
-            System.err.println("Error loading drivers: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error laoding drivers: " + e.getMessage());
+        }
+    }
+
+    private void renderDriverCards() {
+        if (allDrivers != null && !allDrivers.isEmpty()) {
+            showDrivers(allDrivers);
         }
     }
 
     private void loadStatistics() {
-        loadTotalDrivers();
-        loadActiveDrivers();
-        loadAverageBpm();
-    }
-
-    private void loadTotalDrivers() {
         try {
-            int totalDrivers = driverService.getTotalDrivers();
-            totalDriversLabel.setText(String.valueOf(totalDrivers));
+            totalDriversLabel.setText(String.valueOf(driverService.getTotalDrivers()));
+            activeDriversLabel.setText(String.valueOf(driverService.getActiveDrivers()));
+            averageBpmLabel.setText(String.valueOf(driverService.getAverageBpm()));
         } catch (SQLException e) {
             totalDriversLabel.setText("Error");
-            System.err.println("Error loading total drivers: " + e.getMessage());
-        }
-    }
-
-    private void loadActiveDrivers() {
-        try {
-            int activeDrivers = driverService.getActiveDrivers();
-            activeDriversLabel.setText(String.valueOf(activeDrivers));
-        } catch (SQLException e) {
             activeDriversLabel.setText("Error");
-            System.err.println("Error loading active drivers: " + e.getMessage());
-        }
-    }
-
-    private void loadAverageBpm() {
-        try {
-            int averageBpm = driverService.getAverageBpm();
-            averageBpmLabel.setText(String.valueOf(averageBpm));
-        } catch (SQLException e) {
             averageBpmLabel.setText("Error");
-            System.err.println("Error loading average BPM: " + e.getMessage());
         }
     }
 
     private void showDrivers(List<DriverDTO> drivers) {
         driverGridPane.getChildren().clear();
-
         int column = 0;
         int row = 0;
 
         for (DriverDTO driver : drivers) {
             try {
-                FXMLLoader driverCardLoader = new FXMLLoader(getClass().getResource("/views/DriverCard.fxml"));
-                Node driverCard = driverCardLoader.load();
+                FXMLLoader driverCardLoader = new FXMLLoader(getClass().getResource("/views/DriverCardView.fxml"));
+                Node card = driverCardLoader.load();
+                DriverCardController cardController = driverCardLoader.getController();
+                cardController.setDashboardController(this);
+                cardController.setDriverData(driver);
 
                 DriverCardController driverCardController = driverCardLoader.getController();
                 driverCardController.setDriverData(driver);
 
-                driverGridPane.add(driverCard, column, row);
-
-                column++;
-                if (column == GRID_COLUMNS) {
+                driverGridPane.add(card, column, row);
+                if (++column == GRID_COLUMNS) {
                     column = 0;
                     row++;
                 }
             } catch (IOException e) {
-                System.err.println("Error creating driver card: " + e.getMessage());
-                e.printStackTrace();
+                System.err.println("error trying to create driver card: " + e.getMessage());
             }
         }
     }
 
     private void setupSearchFilter() {
-        searchDriversInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterDrivers(newValue);
-        });
+        searchDriversInput.textProperty().addListener((obs, oldVal, newVal) -> filterDrivers(newVal));
     }
 
     private void filterDrivers(String filterText) {
-        if (allDrivers == null) {
-            return;
-        }
+        if (allDrivers == null) return;
 
-        if (filterText == null || filterText.trim().isEmpty()) {
+        if (filterText == null || filterText.isBlank()) {
             showDrivers(allDrivers);
             return;
         }
 
-        String normalizedFilter = normalize(filterText);
-        List<DriverDTO> filteredDrivers = allDrivers.stream()
-                .filter(driver -> matchesFilter(driver, normalizedFilter))
+        String normalized = normalize(filterText);
+        List<DriverDTO> filtered = allDrivers.stream()
+                .filter(driver -> matchesFilter(driver, normalized))
                 .collect(Collectors.toList());
-
-        showDrivers(filteredDrivers);
+        showDrivers(filtered);
     }
 
-    private boolean matchesFilter(DriverDTO driver, String normalizedFilter) {
-        if (containsIgnoreCase(driver.getFullName(), normalizedFilter) ||
-                containsIgnoreCase(driver.getPhone(), normalizedFilter) ||
-                containsIgnoreCase(driver.getEmail(), normalizedFilter)) {
-            return true;
-        }
-
-        var emergencyContact = driver.getEmergencyContactDTO();
-        if (emergencyContact != null) {
-            return containsIgnoreCase(emergencyContact.getFullName(), normalizedFilter) ||
-                    containsIgnoreCase(emergencyContact.getPhone(), normalizedFilter) ||
-                    containsIgnoreCase(emergencyContact.getEmail(), normalizedFilter);
-        }
-
-        return false;
+    private boolean matchesFilter(DriverDTO driver, String normalized) {
+        return containsIgnoreCase(driver.getFullName(), normalized) ||
+                containsIgnoreCase(driver.getPhone(), normalized) ||
+                containsIgnoreCase(driver.getEmail(), normalized) ||
+                (driver.getEmergencyContactDTO() != null && (
+                        containsIgnoreCase(driver.getEmergencyContactDTO().getFullName(), normalized) ||
+                                containsIgnoreCase(driver.getEmergencyContactDTO().getPhone(), normalized) ||
+                                containsIgnoreCase(driver.getEmergencyContactDTO().getEmail(), normalized)));
     }
 
     private boolean containsIgnoreCase(String source, String filter) {
@@ -225,28 +249,95 @@ public class Dashboard2Controller {
     }
 
     private void setupAutoRefresh() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(SECONDS_TO_REFRESH), event -> {
-            refreshDashboard();
-        }));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(SECONDS_TO_REFRESH), event -> refreshDashboard()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
-
-        System.out.println("Auto-refresh configured for " + SECONDS_TO_REFRESH + " seconds");
+        System.out.println("Auto-refresh programmed every " + SECONDS_TO_REFRESH + " seconds");
     }
 
     private void refreshDashboard() {
-        System.out.println("Refreshing dashboard...");
-
+        System.out.println("Updating dashboard...");
         loadAllDrivers();
         loadStatistics();
-
         String currentFilter = searchDriversInput.getText();
         if (currentFilter != null && !currentFilter.isBlank()) {
             filterDrivers(currentFilter);
         } else if (allDrivers != null) {
             showDrivers(allDrivers);
         }
+        System.out.println("Dashboard updated!");
+    }
 
-        System.out.println("Dashboard refreshed!");
+    public void handleAddDriverAction(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DriverFormView.fxml"));
+            Parent root = loader.load();
+
+            DriverFormController controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Add Driver");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            if (controller.isConfirmed()) {
+                driverService.addDriver(controller.getDriver(), controller.getContact());
+                refreshDashboard();
+            }
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleEditDriverAction(DriverDTO driver) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/DriverFormView.fxml"));
+            Parent root = loader.load();
+
+            DriverFormController controller = loader.getController();
+            controller.setEditMode(driver, driver.getEmergencyContactDTO());
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Driver");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            if (controller.isConfirmed()) {
+                driverService.editDriver(controller.getDriver(), controller.getContact());
+                refreshDashboard();
+            }
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleDeleteDriverAction(DriverDTO driver) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Driver");
+        alert.setHeaderText("Are you sure you want to delete this driver?");
+        alert.setContentText(driver.getFullName());
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                driverService.deleteDriver(driver.getId());
+                refreshDashboard();
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Error", "Could not delete driver.");
+            }
+        }
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
