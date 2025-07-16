@@ -19,7 +19,7 @@
 
 ### Funcionalidades de Motoristas
 - [ ] Adicionar novo motorista.
-- [ ] Adicionar BPMs dos motoristas à base de dados recebidos via MQTT.
+- [X] Adicionar BPMs dos motoristas à base de dados recebidos via MQTT.
 - [ ] Mostrar alertas passados dos motoristas.
 - [ ] Editar motorista.
 - [ ] Eliminar motorista.
@@ -32,7 +32,7 @@
 
 ### Dashboard e Estado do Sistema
 - [ ] Mostrar o número real de alertas ativos no dashboard.
-- [ ] Adicionar estado da conexão MQTT.
+- [X] Adicionar estado da conexão MQTT.
 - [ ] Mostrar tempo restante para o refresh do dashboard.
 
 ---
@@ -41,7 +41,7 @@
 
 ### Funcionalidades Futuras
 - [ ] Adicionar funcionalidade de logout.
-- [ ] Pensar num sistema de emparelhamento (pairing).
+- [X] Pensar num sistema de emparelhamento (pairing).
 - [ ] Verificar tratamento de erros.
 
 ---

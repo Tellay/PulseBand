@@ -107,7 +107,7 @@ public class DriverDAO {
         String query = """
                     SELECT COUNT(DISTINCT user_id) AS active_drivers
                     FROM vital
-                    WHERE recorded_at >= NOW() - INTERVAL '10 SECONDS';
+                    WHERE recorded_at >= NOW() - INTERVAL '40 SECONDS';
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -138,4 +138,8 @@ public class DriverDAO {
     }
 
     // ! Implement active alerts
+
+    public void deleteDriver(int driverId) throws  SQLException {
+
+    }
 }

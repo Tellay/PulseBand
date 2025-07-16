@@ -85,7 +85,6 @@ public class Dashboard2Controller {
         }
     }
 
-
     private MqttStatusListener getMqttStatusListener() {
         return (connected, message) -> Platform.runLater(() -> updateMqttStatus(connected, message));
     }

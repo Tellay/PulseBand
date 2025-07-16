@@ -9,6 +9,10 @@
     -fx-font-size: 16px;
 }
 
+.remaining-time {
+    -fx-text-fill: -color-muted-foreground;
+}
+
 .mqtt-pill {
     -fx-background-radius: 999px;
     -fx-border-radius: 999px;
@@ -19,7 +23,6 @@
     -fx-background-color: transparent;
 }
 
-/* Bordas da pill */
 .mqtt-pill.success {
     -fx-border-color: -color-primary;
 }
@@ -28,16 +31,14 @@
     -fx-border-color: -color-dangerous;
 }
 
-/* Círculo - cor do fill conforme estado */
 .mqtt-pill.success > Circle {
-    -fx-fill: -color-primary; /* verde */
+    -fx-fill: -color-primary;
 }
 
 .mqtt-pill.error > Circle {
-    -fx-fill: -color-dangerous; /* vermelho */
+    -fx-fill: -color-dangerous;
 }
 
-/* Texto */
 .mqtt-pill-text {
     -fx-font-weight: bold;
     -fx-text-fill: #ccc;
