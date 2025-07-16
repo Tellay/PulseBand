@@ -30,6 +30,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,13 +38,10 @@ import java.util.stream.Collectors;
 import static com.pulseband.pulseband.utils.TextUtils.normalize;
 
 public class Dashboard2Controller {
-    private static final int SECONDS_TO_REFRESH = 20;
     private static final int GRID_COLUMNS = 3;
 
     @FXML
     private HBox mqttStatusPill;
-    @FXML
-    private Circle mqttStatusCircle;
     @FXML
     private Label mqttStatusLabel;
     @FXML
@@ -63,6 +61,8 @@ public class Dashboard2Controller {
 
     private final DriverService driverService = new DriverService();
     private List<DriverDTO> allDrivers;
+
+    MqttConfig mqttConfig = new MqttConfig();
     private MqttClientManager mqttClientManager;
 
     private final DriverDTO driver = new DriverDTO();
@@ -75,17 +75,16 @@ public class Dashboard2Controller {
         loadStatistics();
         renderDriverCards();
         setupSearchFilter();
-        setupAutoRefresh();
     }
 
     private void setupMqttClient() {
         try {
-            MqttConfig mqttConfig = new MqttConfig();
             mqttClientManager = new MqttClientManager(
                     mqttConfig.getMqttBrokerUrl(),
                     mqttConfig.getMqttClientId(),
                     mqttConfig.getMqttBpmTopic(),
                     mqttConfig.getMqttAlertTopic(),
+                    mqttConfig.getMqttDecryptedTopic(),
                     getMqttStatusListener()
             );
             mqttClientManager.setMessageHandler(getMessageHandler());
@@ -118,22 +117,38 @@ public class Dashboard2Controller {
                     .findFirst();
 
             optDriver.ifPresent(driver -> {
+                driver.setLastBpmTimestamp((LocalDateTime.now()));
+
                 if (json.has("status")) {
                     String msg = json.get("status").getAsString();
                     driver.setTemporaryStatus(msg);
+                    driver.setLastBpm(null);
                     System.out.println("⚠ Temporary state: " + driver.getFullName() + " | " + msg);
+                    try {
+                        mqttClientManager.publish(mqttConfig.getMqttDecryptedTopic(), msg);
+                    } catch (MqttException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
-                // ✅ BPM RECEBIDO
                 if (json.has("bpm")) {
                     int bpm = json.get("bpm").getAsInt();
                     try {
                         driverService.insertDriverBpm(id, bpm);
-                    } catch (SQLException e) {
+                        Integer lastBpm = driverService.getLastBpm(id);
+                        driver.setLastBpm(lastBpm);
+
+                        JsonObject outgoingJson = new JsonObject();
+                        outgoingJson.addProperty("id", id);
+                        outgoingJson.addProperty("bpm", lastBpm);
+
+                        mqttClientManager.publish(mqttConfig.getMqttDecryptedTopic(), String.valueOf(bpm));
+
+                    } catch (SQLException | MqttException e) {
                         e.printStackTrace();
                     }
+
                     driver.setTemporaryStatus(null);
-                    System.out.println("✅ Updated BPM of " + driver.getFullName() + ": " + bpm);
                 }
 
                 if (json.has("alert")) {
@@ -253,26 +268,6 @@ public class Dashboard2Controller {
         return source != null && normalize(source).contains(filter);
     }
 
-    private void setupAutoRefresh() {
-        final int[] remainingTime = {SECONDS_TO_REFRESH};
-
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> {
-                    remainingTime[0]--;
-                    remainingTimeLabel.setText("Refreshing in " + remainingTime[0] + "s...");
-
-                    if (remainingTime[0] == 0) {
-                        refreshDashboard();
-                        remainingTime[0] = SECONDS_TO_REFRESH;
-                    }
-                })
-        );
-
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-    }
-
-
     private void refreshDashboard() {
         System.out.println("Updating dashboard...");
         loadAllDrivers();
@@ -285,6 +280,8 @@ public class Dashboard2Controller {
         }
         System.out.println("Dashboard updated!");
     }
+
+
 
     public void handleAddDriverAction(ActionEvent actionEvent) {
         try {

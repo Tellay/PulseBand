@@ -10,12 +10,16 @@ public class MqttClientManager {
     private MqttMessageHandler messageHandler;
     private final String bpmTopic;
     private final String alertTopic;
+    private final String decryptedTopic;
     private final MqttStatusListener listener;
     private boolean connected = false;
 
-    public MqttClientManager(String brokerUrl, String clientId, String bpmTopic, String alertTopic, MqttStatusListener listener) throws MqttException {
+    private final MqttConfig mqttConfig = new MqttConfig();
+
+    public MqttClientManager(String brokerUrl, String clientId, String bpmTopic, String alertTopic, String decryptedTopic, MqttStatusListener listener) throws MqttException {
         this.bpmTopic = bpmTopic;
         this.alertTopic = alertTopic;
+        this.decryptedTopic = decryptedTopic;
         this.listener = listener;
 
         client = new MqttClient(brokerUrl, clientId);
@@ -23,20 +27,20 @@ public class MqttClientManager {
             @Override
             public void connectionLost(Throwable throwable) {
                 connected = false;
-                listener.onConnectionStatusChanged(false, "Mqtt connection lost: " + throwable.getMessage());
+                listener.onConnectionStatusChanged(false, "Connection lost!");
             }
 
             @Override
-            public void messageArrived(String incomingTopic, MqttMessage message) {
-                if (messageHandler != null) {
-                    try {
-                        String base64 = new String(message.getPayload(), StandardCharsets.UTF_8);
-                        String decrypted = Decipher.decryptMessage(base64);
-                        messageHandler.onMessageReceived(incomingTopic, decrypted);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        messageHandler.onMessageReceived(incomingTopic, "Error deciphering: " + e.getMessage());
-                    }
+            public void messageArrived(String topic, MqttMessage message) {
+                String payload = new String(message.getPayload());
+                try {
+                    String finalMessage = mqttConfig.shouldDecrypt(topic)
+                            ? Decipher.decryptMessage(payload)
+                            : payload;
+
+                    messageHandler.onMessageReceived(topic, finalMessage);
+                } catch (Exception e) {
+                    System.err.println("Erro a processar mensagem no tópico " + topic + ": " + e.getMessage());
                 }
             }
 
@@ -58,6 +62,7 @@ public class MqttClientManager {
                 listener.onConnectionStatusChanged(true, "Connected!");
                 subscribe(bpmTopic);
                 subscribe(alertTopic);
+                //subscribe(decryptedTopic);
             } catch (MqttException e) {
                 connected = false;
                 listener.onConnectionStatusChanged(false, "Error!");

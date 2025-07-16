@@ -6,6 +6,7 @@ import java.util.List;
 public class DriverDTO extends UserDTO {
     private String temporaryStatus;
     private Integer lastBpm;
+    private LocalDateTime lastBpmTimestamp;
     private EmergencyContactDTO emergencyContactDTO;
     private List<AlertDTO> alerts;
 
@@ -39,8 +40,16 @@ public class DriverDTO extends UserDTO {
         return lastBpm;
     }
 
+    public LocalDateTime getLastBpmTimestamp() {
+        return lastBpmTimestamp;
+    }
+
     public void setLastBpm(Integer lastBpm) {
         this.lastBpm = lastBpm;
+    }
+
+    public void setLastBpmTimestamp(LocalDateTime timestamp) {
+        this.lastBpmTimestamp = timestamp;
     }
 
     public EmergencyContactDTO getEmergencyContactDTO() {

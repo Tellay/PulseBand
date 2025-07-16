@@ -17,6 +17,10 @@ public class MqttConfig {
         }
     }
 
+    public boolean shouldDecrypt(String topic) {
+        return topic.equals(getMqttBpmTopic()) || topic.equals(getMqttAlertTopic());
+    }
+
     public String getMqttBrokerUrl() {
         return properties.getProperty("mqtt.brokerUrl");
     }
@@ -29,5 +33,11 @@ public class MqttConfig {
         return properties.getProperty("mqtt.bpmTopic");
     }
 
-    public String getMqttAlertTopic() { return properties.getProperty("mqtt.alertTopic"); }
+    public String getMqttAlertTopic() {
+        return properties.getProperty("mqtt.alertTopic");
+    }
+
+    public String getMqttDecryptedTopic() {
+        return properties.getProperty("mqtt.decryptedTopic");
+    }
 }

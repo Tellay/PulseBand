@@ -28,21 +28,22 @@
 - [ ] Adicionar ícones aos botões de editar e eliminar.
 - [ ] Alterar a cor de fundo do botão de eliminar.
 - [ ] Mostrar uma borda vermelha e um badge no cartão do motorista quando os BPMs forem elevados.
-- [ ] Alterar a cor do pequeno ponto no cartão do motorista quando estiver offline.
+- [X] Alterar a cor do pequeno ponto no cartão do motorista quando estiver offline.
 
 ### Dashboard e Estado do Sistema
 - [ ] Mostrar o número real de alertas ativos no dashboard.
 - [X] Adicionar estado da conexão MQTT.
-- [ ] Mostrar tempo restante para o refresh do dashboard.
+- [X] Mostrar tempo restante para o refresh do dashboard.
 
 ---
 
 ## 🧠 Planeado / A Considerar
 
 ### Funcionalidades Futuras
-- [ ] Adicionar funcionalidade de logout.
+- [X] Adicionar funcionalidade de logout.
 - [X] Pensar num sistema de emparelhamento (pairing).
 - [ ] Verificar tratamento de erros.
+- [ ] Rever refresh dashboard quando da logout.
 
 ---
 
@@ -50,6 +51,6 @@
 - [ ] Tornar este README.md mais bonito.
 
 ## 📺 Outros
-- [ ] Fazer a apresentação.
-- [ ] Rever o uso de `ON DELETE CASCADE`, pois em alguns casos não faz sentido.
+- [X] Fazer a apresentação.
+- [X] Rever o uso de `ON DELETE CASCADE`, pois em alguns casos não faz sentido.
 - [X] Traduzir as mensagens do código do ESP.

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<VBox maxWidth="1.7976931348623157E308" spacing="24.0" styleClass="driver-card"
+<VBox fx:id="rootCard" maxWidth="1.7976931348623157E308" spacing="24.0" styleClass="driver-card"
       stylesheets="@../styles/globals.css,@../styles/driver-card.css" xmlns="http://javafx.com/javafx/24.0.1"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pulseband.pulseband.controllers.DriverCardController">
     <padding>
@@ -18,7 +18,7 @@
     <HBox alignment="CENTER_LEFT" spacing="16.0">
         <Label fx:id="nameLabel" maxWidth="1.7976931348623157E308" styleClass="driver-name" text="Name"
                HBox.hgrow="ALWAYS"/>
-        <Circle fill="#65fe08" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
+        <Circle fx:id="statusCircle" styleClass="status-circle" fill="#65fe08" radius="10.0"/>
     </HBox>
     <VBox spacing="6.0">
         <HBox alignment="CENTER_LEFT" spacing="8.0">

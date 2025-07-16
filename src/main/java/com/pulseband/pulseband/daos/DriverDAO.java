@@ -19,10 +19,10 @@ public class DriverDAO {
                       u.full_name,
                       u.phone,
                       u.email,
-                      u.birth_date,            -- ⬅️ novo
+                      u.birth_date,
                       u.admission_date,
-                      v.bpm AS last_bpm,
-                      ec.id AS emergency_contact_id,  -- <== adiciona esta linha
+                      v.bpm,
+                      ec.id AS emergency_contact_id,
                       ec.full_name AS emergency_contact_name,
                       ec.phone AS emergency_contact_phone,
                       ec.email AS emergency_contact_email
@@ -74,13 +74,6 @@ public class DriverDAO {
                 driver.setEmail(email);
                 driver.setEmergencyContactDTO(emergencyContact);
 
-                int bpm = rs.getInt("last_bpm");
-                if (rs.wasNull()) {
-                    driver.setLastBpm(null);
-                } else {
-                    driver.setLastBpm(bpm);
-                }
-
                 driver.setBirthDate(birthDate);
                 driver.setAdmissionDate(admissionDate);
                 drivers.add(driver);
@@ -110,12 +103,11 @@ public class DriverDAO {
         return 0;
     }
 
-    // ! Change the interval
     public int getActiveDrivers() throws SQLException {
         String query = """
                     SELECT COUNT(DISTINCT user_id) AS active_drivers
                     FROM vital
-                    WHERE recorded_at >= NOW() - INTERVAL '40 SECONDS';
+                    WHERE recorded_at >= NOW();
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection()) {

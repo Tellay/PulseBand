@@ -6,6 +6,10 @@
     -fx-background-radius: 6px;
 }
 
+.driver-card.alert {
+    -fx-border-color: -color-dangerous;
+}
+
 .driver-name {
     -fx-text-fill: -color-foreground;
     -fx-font-weight: bold;
@@ -33,4 +37,12 @@
     -fx-text-fill: -color-foreground;
     -fx-font-weight: bold;
     -fx-font-size: 18px;
+}
+
+.status-circle.online {
+    -fx-fill: -color-primary;
+}
+
+.status-circle.offline {
+    -fx-fill: -color-border;
 }

@@ -1,9 +1,13 @@
 package com.pulseband.pulseband.services;
 
 import com.pulseband.pulseband.daos.DriverDAO;
+import com.pulseband.pulseband.db.DatabaseConnection;
 import com.pulseband.pulseband.dtos.DriverDTO;
 import com.pulseband.pulseband.dtos.EmergencyContactDTO;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -48,5 +52,21 @@ public class DriverService {
 
     public void deleteDriver(int driverId) throws SQLException {
         driverDAO.deleteDriver(driverId);
+    }
+
+    public Integer getLastBpm(int driverId) throws SQLException {
+        String query = "SELECT bpm FROM vital WHERE user_id = ? ORDER BY recorded_at DESC LIMIT 1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, driverId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("bpm");
+            }
+        }
+        return null;
     }
 }
