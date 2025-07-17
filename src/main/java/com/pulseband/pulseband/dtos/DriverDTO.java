@@ -7,6 +7,7 @@ public class DriverDTO extends UserDTO {
     private String temporaryStatus;
     private Integer lastBpm;
     private LocalDateTime lastBpmTimestamp;
+    private LocalDateTime lastAlertTimestamp;
     private EmergencyContactDTO emergencyContactDTO;
     private List<AlertDTO> alerts;
 
@@ -44,12 +45,20 @@ public class DriverDTO extends UserDTO {
         return lastBpmTimestamp;
     }
 
+    public LocalDateTime getLastAlertTimestamp(){
+        return lastAlertTimestamp;
+    }
+
     public void setLastBpm(Integer lastBpm) {
         this.lastBpm = lastBpm;
     }
 
     public void setLastBpmTimestamp(LocalDateTime timestamp) {
         this.lastBpmTimestamp = timestamp;
+    }
+
+    public void setLastAlertTimestamp(LocalDateTime timestamp) {
+        this.lastAlertTimestamp = timestamp;
     }
 
     public EmergencyContactDTO getEmergencyContactDTO() {

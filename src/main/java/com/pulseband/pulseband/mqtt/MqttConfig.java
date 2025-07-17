@@ -37,7 +37,11 @@ public class MqttConfig {
         return properties.getProperty("mqtt.alertTopic");
     }
 
-    public String getMqttDecryptedTopic() {
-        return properties.getProperty("mqtt.decryptedTopic");
+    public String getMqttDecryptedBpmTopic() {
+        return properties.getProperty("mqtt.decryptedBpmTopic");
+    }
+
+    public String getMqttDecryptedAlertTopic() {
+        return properties.getProperty("mqtt.decryptedAlertTopic");
     }
 }

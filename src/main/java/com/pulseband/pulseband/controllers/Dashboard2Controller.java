@@ -10,6 +10,7 @@ import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
 import com.pulseband.pulseband.mqtt.MqttStatusListener;
 import com.pulseband.pulseband.services.DriverService;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -75,6 +76,7 @@ public class Dashboard2Controller {
         loadStatistics();
         renderDriverCards();
         setupSearchFilter();
+        startAlertBorderRefresh();
     }
 
     private void setupMqttClient() {
@@ -84,7 +86,8 @@ public class Dashboard2Controller {
                     mqttConfig.getMqttClientId(),
                     mqttConfig.getMqttBpmTopic(),
                     mqttConfig.getMqttAlertTopic(),
-                    mqttConfig.getMqttDecryptedTopic(),
+                    mqttConfig.getMqttDecryptedBpmTopic(),
+                    mqttConfig.getMqttDecryptedAlertTopic(),
                     getMqttStatusListener()
             );
             mqttClientManager.setMessageHandler(getMessageHandler());
@@ -117,7 +120,7 @@ public class Dashboard2Controller {
                     .findFirst();
 
             optDriver.ifPresent(driver -> {
-                driver.setLastBpmTimestamp((LocalDateTime.now()));
+                driver.setLastBpmTimestamp(LocalDateTime.now());
 
                 if (json.has("status")) {
                     String msg = json.get("status").getAsString();
@@ -125,7 +128,7 @@ public class Dashboard2Controller {
                     driver.setLastBpm(null);
                     System.out.println("⚠ Temporary state: " + driver.getFullName() + " | " + msg);
                     try {
-                        mqttClientManager.publish(mqttConfig.getMqttDecryptedTopic(), msg);
+                        mqttClientManager.publish(mqttConfig.getMqttDecryptedBpmTopic(), msg);
                     } catch (MqttException e) {
                         throw new RuntimeException(e);
                     }
@@ -133,6 +136,7 @@ public class Dashboard2Controller {
 
                 if (json.has("bpm")) {
                     int bpm = json.get("bpm").getAsInt();
+                    driver.setLastBpmTimestamp(LocalDateTime.now());
                     try {
                         driverService.insertDriverBpm(id, bpm);
                         Integer lastBpm = driverService.getLastBpm(id);
@@ -142,7 +146,7 @@ public class Dashboard2Controller {
                         outgoingJson.addProperty("id", id);
                         outgoingJson.addProperty("bpm", lastBpm);
 
-                        mqttClientManager.publish(mqttConfig.getMqttDecryptedTopic(), String.valueOf(bpm));
+                        mqttClientManager.publish(mqttConfig.getMqttDecryptedBpmTopic(), String.valueOf(bpm));
 
                     } catch (SQLException | MqttException e) {
                         e.printStackTrace();
@@ -153,13 +157,30 @@ public class Dashboard2Controller {
 
                 if (json.has("alert")) {
                     String alert = json.get("alert").getAsString();
+                    driver.setLastAlertTimestamp(LocalDateTime.now());
                     try {
                         driverService.insertDriverAlert(id, alert);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                     System.out.println("⚠ ALERT for " + driver.getFullName() + ": " + alert);
+
+                    Platform.runLater(() -> {
+                        for (Node card : driverGridPane.getChildren()) {
+                            if (card.getUserData() instanceof DriverCardController controller
+                                    && controller.driver.getId() == driver.getId()) {
+                                controller.updateAlertBorder();
+                            }
+                        }
+                    });
+
+                    try {
+                        mqttClientManager.publish(mqttConfig.getMqttDecryptedAlertTopic(), alert);
+                    } catch (MqttException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+
             });
 
             Platform.runLater(() -> {
@@ -218,13 +239,13 @@ public class Dashboard2Controller {
                 FXMLLoader driverCardLoader = new FXMLLoader(getClass().getResource("/views/DriverCardView.fxml"));
                 Node card = driverCardLoader.load();
                 DriverCardController cardController = driverCardLoader.getController();
+                card.setUserData(cardController);
+
                 cardController.setDashboardController(this);
                 cardController.setDriverData(driver);
 
-                DriverCardController driverCardController = driverCardLoader.getController();
-                driverCardController.setDriverData(driver);
-
                 driverGridPane.add(card, column, row);
+
                 if (++column == GRID_COLUMNS) {
                     column = 0;
                     row++;
@@ -363,6 +384,22 @@ public class Dashboard2Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void startAlertBorderRefresh() {
+        Timeline alertRefreshTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> {
+                    Platform.runLater(() -> {
+                        for (Node card : driverGridPane.getChildren()) {
+                            if (card.getUserData() instanceof DriverCardController controller) {
+                                controller.updateAlertBorder();
+                            }
+                        }
+                    });
+                })
+        );
+        alertRefreshTimeline.setCycleCount(Animation.INDEFINITE);
+        alertRefreshTimeline.play();
     }
 
     private void showError(String title, String message) {

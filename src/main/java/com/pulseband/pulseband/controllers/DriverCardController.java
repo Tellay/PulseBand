@@ -1,6 +1,9 @@
 package com.pulseband.pulseband.controllers;
 
 import com.pulseband.pulseband.dtos.DriverDTO;
+import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -9,7 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
-import java.time.Duration;
+import javafx.util.Duration;
 import java.time.LocalDateTime;
 
 public class DriverCardController {
@@ -23,8 +26,10 @@ public class DriverCardController {
     @FXML private Label emergencyContactEmailLabel;
     @FXML private Circle statusCircle;
     @FXML private VBox rootCard;
+    @FXML private String displayText;
 
-    private DriverDTO driver;
+    public DriverDTO driver;
+    private Timeline statusChecker;
 
     public void setDriverData(DriverDTO driver) {
         this.driver = driver;
@@ -36,7 +41,6 @@ public class DriverCardController {
         emergencyContactPhoneLabel.setText(driver.getEmergencyContactDTO().getPhone());
         emergencyContactEmailLabel.setText(driver.getEmergencyContactDTO().getEmail());
 
-        String displayText;
         if (driver.getTemporaryStatus() != null) {
             displayText = driver.getTemporaryStatus();
         } else if (driver.getLastBpm() != null) {
@@ -47,6 +51,8 @@ public class DriverCardController {
         lastDriverBpm.setText(displayText);
 
         updateStatusCircle();
+        updateAlertBorder();
+        startStatusMonitor();
 
         if (driver.getTemporaryStatus() != null && driver.getTemporaryStatus().toLowerCase().contains("alert")) {
             if (!rootCard.getStyleClass().contains("alert")) {
@@ -65,14 +71,58 @@ public class DriverCardController {
         boolean isOnline = false;
 
         if (driver.getLastBpmTimestamp() != null) {
-            Duration duration = Duration.between(driver.getLastBpmTimestamp(), LocalDateTime.now());
+            java.time.Duration duration = java.time.Duration.between(driver.getLastBpmTimestamp(), LocalDateTime.now());
             isOnline = duration.getSeconds() <= 10;
         }
 
-        if (isOnline)
+        System.out.println("Atualizar statusCircle para " + (isOnline ? "online" : "offline"));
+
+        if (isOnline) {
             statusCircle.getStyleClass().add("online");
-        else
+
+            if (driver.getTemporaryStatus() != null) {
+                lastDriverBpm.setText(driver.getTemporaryStatus());
+            } else if (driver.getLastBpm() != null) {
+                lastDriverBpm.setText(driver.getLastBpm() + " BPM");
+            } else {
+                lastDriverBpm.setText("---");
+            }
+
+        } else {
             statusCircle.getStyleClass().add("offline");
+            lastDriverBpm.setText("---");
+        }
+    }
+
+    private void startStatusMonitor() {
+        System.out.println("⚠ A aplicar estilo de alerta temporário");
+
+        rootCard.getStyleClass().remove("alert");
+        rootCard.getStyleClass().add("alert");
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(3));
+        pause.setOnFinished(event -> {
+            System.out.println("⏳ A remover estilo de alerta");
+            rootCard.getStyleClass().remove("alert");
+        });
+        pause.playFromStart();
+    }
+
+    public void updateAlertBorder() {
+        boolean alert = false;
+
+        if (driver.getLastAlertTimestamp() != null) {
+            java.time.Duration duration = java.time.Duration.between(driver.getLastAlertTimestamp(), LocalDateTime.now());
+            alert = duration.getSeconds() <= 10;
+        }
+
+        boolean currentlyAlerted = rootCard.getStyleClass().contains("alert");
+
+        if (alert && !currentlyAlerted) {
+            rootCard.getStyleClass().add("alert");
+        } else if (!alert && currentlyAlerted) {
+            rootCard.getStyleClass().remove("alert");
+        }
     }
 
     public void setDashboardController(Dashboard2Controller controller) {

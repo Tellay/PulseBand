@@ -10,16 +10,14 @@ public class MqttClientManager {
     private MqttMessageHandler messageHandler;
     private final String bpmTopic;
     private final String alertTopic;
-    private final String decryptedTopic;
     private final MqttStatusListener listener;
     private boolean connected = false;
 
     private final MqttConfig mqttConfig = new MqttConfig();
 
-    public MqttClientManager(String brokerUrl, String clientId, String bpmTopic, String alertTopic, String decryptedTopic, MqttStatusListener listener) throws MqttException {
+    public MqttClientManager(String brokerUrl, String clientId, String bpmTopic, String alertTopic, String decryptedBpmTopic, String decryptedAlertTopic, MqttStatusListener listener) throws MqttException {
         this.bpmTopic = bpmTopic;
         this.alertTopic = alertTopic;
-        this.decryptedTopic = decryptedTopic;
         this.listener = listener;
 
         client = new MqttClient(brokerUrl, clientId);
