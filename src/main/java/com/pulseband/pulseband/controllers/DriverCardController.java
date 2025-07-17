@@ -1,14 +1,11 @@
 package com.pulseband.pulseband.controllers;
 
 import com.pulseband.pulseband.dtos.DriverDTO;
-import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
-import javafx.event.ActionEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
@@ -63,7 +60,7 @@ public class DriverCardController {
         }
     }
 
-    private Dashboard2Controller dashboard2Controller;
+    private DashboardController dashboard2Controller;
 
     private void updateStatusCircle() {
         statusCircle.getStyleClass().removeAll("online", "offline");
@@ -125,7 +122,7 @@ public class DriverCardController {
         }
     }
 
-    public void setDashboardController(Dashboard2Controller controller) {
+    public void setDashboardController(DashboardController controller) {
         this.dashboard2Controller = controller;
     }
 

@@ -106,8 +106,8 @@ public class DriverDAO {
     public int getActiveDrivers() throws SQLException {
         String query = """
                     SELECT COUNT(DISTINCT user_id) AS active_drivers
-                    FROM vital
-                    WHERE recorded_at >= NOW();
+                                        FROM vital
+                                        WHERE recorded_at >= NOW() - INTERVAL '20 seconds';
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -139,9 +139,9 @@ public class DriverDAO {
 
     public boolean insertDriverBpm(int userId, int bpm) throws SQLException {
         String query = """
-        INSERT INTO vital (user_id, bpm)
-        VALUES (?, ?);
-    """;
+                    INSERT INTO vital (user_id, bpm)
+                    VALUES (?, ?);
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -157,9 +157,9 @@ public class DriverDAO {
 
     public boolean insertDriverAlert(int userId, String message) throws SQLException {
         String query = """
-        INSERT INTO alert (user_id, message)
-        VALUES (?, ?);
-    """;
+                    INSERT INTO alert (user_id, message)
+                    VALUES (?, ?);
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -174,24 +174,26 @@ public class DriverDAO {
 
     public void addDriver(DriverDTO driver, EmergencyContactDTO emergencyContact) throws SQLException {
         String insertContactSql = """
-        INSERT INTO emergency_contact (full_name, phone, email)
-        VALUES (?, ?, ?)
-    """;
+                INSERT INTO emergency_contact (full_name, phone, email)
+                VALUES (?, ?, ?)
+            """;
 
         String insertDriverSql = """
-        INSERT INTO "user" (
-            full_name,
-            password_hash,
-            phone,
-            email,
-            birth_date,
-            admission_date,
-            user_type_id,
-            emergency_contact_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """;
+                INSERT INTO "user" (
+                    full_name,
+                    password_hash,
+                    phone,
+                    email,
+                    birth_date,
+                    admission_date,
+                    user_type_id,
+                    emergency_contact_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
 
-        try (Connection conn = DatabaseConnection .getConnection()) {
+        final int DRIVER_USER_TYPE_ID = 3;
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
 
             int emergencyContactId;
@@ -218,7 +220,7 @@ public class DriverDAO {
                 stmt.setString(4, driver.getEmail());
                 stmt.setObject(5, driver.getBirthDate());
                 stmt.setObject(6, driver.getAdmissionDate());
-                stmt.setInt(7, driver.getUserTypeId());
+                stmt.setInt(7, DRIVER_USER_TYPE_ID);
                 stmt.setInt(8, emergencyContactId);
 
                 stmt.executeUpdate();
@@ -242,33 +244,33 @@ public class DriverDAO {
 
     public void editDriver(DriverDTO driver, EmergencyContactDTO emergencyContact) throws SQLException {
         String updateUserWithPasswordSql = """
-        UPDATE "user" SET
-            full_name = ?,
-            email = ?,
-            phone = ?,
-            birth_date = ?,
-            admission_date = ?,
-            password_hash = ?
-        WHERE id = ?
-    """;
+                    UPDATE "user" SET
+                        full_name = ?,
+                        email = ?,
+                        phone = ?,
+                        birth_date = ?,
+                        admission_date = ?,
+                        password_hash = ?
+                    WHERE id = ?
+                """;
 
         String updateUserWithoutPasswordSql = """
-        UPDATE "user" SET
-            full_name = ?,
-            email = ?,
-            phone = ?,
-            birth_date = ?,
-            admission_date = ?
-        WHERE id = ?
-    """;
+                    UPDATE "user" SET
+                        full_name = ?,
+                        email = ?,
+                        phone = ?,
+                        birth_date = ?,
+                        admission_date = ?
+                    WHERE id = ?
+                """;
 
         String updateContactSql = """
-        UPDATE emergency_contact SET
-            full_name = ?,
-            phone = ?,
-            email = ?
-        WHERE id = ?
-    """;
+                    UPDATE emergency_contact SET
+                        full_name = ?,
+                        phone = ?,
+                        email = ?
+                    WHERE id = ?
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);

@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pulseband.pulseband.dtos.DriverDTO;
 import com.pulseband.pulseband.dtos.EmergencyContactDTO;
-import com.pulseband.pulseband.dtos.UserDTO;
 import com.pulseband.pulseband.mqtt.MqttClientManager;
 import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
@@ -24,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
 
 import static com.pulseband.pulseband.utils.TextUtils.normalize;
 
-public class Dashboard2Controller {
+public class DashboardController {
     private static final int GRID_COLUMNS = 3;
 
     @FXML
@@ -54,8 +52,6 @@ public class Dashboard2Controller {
     private Label activeDriversLabel;
     @FXML
     private Label averageBpmLabel;
-    @FXML
-    private Label remainingTimeLabel;
     @FXML
     private TextField searchDriversInput;
     @FXML
