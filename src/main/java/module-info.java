@@ -16,6 +16,7 @@ module com.pulseband.pulseband {
     requires org.postgresql.jdbc;
     requires com.google.gson;
     requires java.desktop;
+    requires jakarta.mail;
 
     opens com.pulseband.pulseband to javafx.fxml;
     exports com.pulseband.pulseband;

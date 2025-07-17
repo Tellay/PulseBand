@@ -10,6 +10,7 @@ import com.pulseband.pulseband.mqtt.MqttConfig;
 import com.pulseband.pulseband.mqtt.MqttMessageHandler;
 import com.pulseband.pulseband.mqtt.MqttStatusListener;
 import com.pulseband.pulseband.services.DriverService;
+import com.pulseband.pulseband.services.EmailService;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -111,6 +112,8 @@ public class Dashboard2Controller {
 
     private void handleIncomingMessage(String message) {
         try {
+            EmailService emailService = new EmailService();
+
             JsonObject json = JsonParser.parseString(message).getAsJsonObject();
             if (!json.has("id")) return;
 
@@ -159,6 +162,7 @@ public class Dashboard2Controller {
                     String alert = json.get("alert").getAsString();
                     driver.setLastAlertTimestamp(LocalDateTime.now());
                     try {
+                        emailService.sendEmail(driver.getEmergencyContactDTO().getEmail(), "\uD83D\uDEA8 Alert!", "The driver " + driver.getFullName() + " is suffering from " + alert.toLowerCase());
                         driverService.insertDriverAlert(id, alert);
                     } catch (SQLException e) {
                         e.printStackTrace();
